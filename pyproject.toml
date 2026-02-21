@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lang-chain-project"
+version = "0.1.0"
+description = "LangChain + FastAPI starter with AWS integrations."
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+  { name = "Your Name", email = "you@example.com" }
+]
+dependencies = [
+  "fastapi>=0.109",
+  "uvicorn[standard]>=0.25",
+  "langchain>=0.1",
+  "langchain-community>=0.0.30",
+  "langchain-openai>=0.0.5",
+  "langsmith>=0.1.14",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "python-dotenv>=1.0",
+  "httpx>=0.26",
+  "orjson>=3.9",
+  "tenacity>=8.2",
+  "boto3>=1.34",
+  "botocore>=1.34",
+  "awscli>=1.32",
+  "aws-secretsmanager-caching>=1.1.3"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "httpx>=0.26",
+  "ruff>=0.2",
+  "mypy>=1.8",
+  "types-requests>=2.31.0.20240218"
+]
+
+[project.urls]
+homepage = "https://example.com"
+repository = "https://example.com/lang-chain-project"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = [
+  "backend/src/backend",
+  "worker/src/worker",
+  "pipelines/src/pipelines",
+]
+
+[tool.hatch.envs.default]
+type = "virtual"
+path = ".venv"
+
+[tool.hatch.envs.default.scripts]
+start = "uvicorn app.main:app --reload"
+test = "pytest"
+
+[tool.ruff]
+line-length = 100
