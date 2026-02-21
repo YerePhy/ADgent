@@ -18,9 +18,12 @@ RUN apt-get update \
         build-essential \
         curl \
         git \
+        openssh-client \
+        sudo \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd --gid "${USER_GID}" "${USERNAME}" \
-    && useradd --uid "${USER_UID}" --gid "${USER_GID}" -m "${USERNAME}"
+    && useradd --uid "${USER_UID}" --gid "${USER_GID}" -m "${USERNAME}" \
+    && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/${USERNAME}
 
 WORKDIR /workspace
 
