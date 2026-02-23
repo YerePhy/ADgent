@@ -1,0 +1,174 @@
+# ──────────────────────────────────────────────────────────────
+# CI – lint, type-check, and test on every PR that targets main
+# ──────────────────────────────────────────────────────────────
+name: CI                                  # Display name in the Actions tab.
+
+# ── 1. When does this workflow run? ──────────────────────────
+on:
+  pull_request:                           # Fires on PR opened, synchronize (new push), reopened.
+    branches: [main]                      # Only PRs whose *target* is main.
+  push:
+    branches: [main]                      # Also fires on direct pushes to main (post-merge).
+
+# Cancel in-flight runs for the same PR when a new push arrives.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# ── 2. Permissions ───────────────────────────────────────────
+permissions:
+  contents: read                          # Only needs to read repo code.
+
+# ── 3. Jobs ──────────────────────────────────────────────────
+jobs:
+
+  # ── 3a. Detect which packages changed ─────────────────────
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      worker:  ${{ steps.filter.outputs.worker }}
+      pipelines: ${{ steps.filter.outputs.pipelines }}
+    steps:
+      - uses: actions/checkout@v4         # Check out the repo so the filter can diff files.
+
+      - uses: dorny/paths-filter@v3       # Lightweight action that diffs changed files.
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - 'tests/backend/**'
+            worker:
+              - 'worker/**'
+              - 'tests/worker/**'
+            pipelines:
+              - 'pipelines/**'
+              - 'tests/pipelines/**'
+            frontend:
+              - 'frontend/**'
+              - 'tests/frontend/**'
+
+  # ── 3b. Lint + type-check (runs once, fast) ───────────────
+  lint:
+    name: Lint & type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5     # Install the Python version we need.
+        with:
+          python-version: "3.12"
+
+      - name: Install dev tools
+        run: pip install ruff mypy
+
+      - name: Ruff check                  # Linting (style + import order).
+        run: ruff check .
+
+      - name: Ruff format check           # Verify formatting without modifying files.
+        run: ruff format --check .
+
+      - name: Mypy                        # Static type checking.
+        run: mypy backend/src worker/src pipelines/src --ignore-missing-imports
+
+  # ── 3c. Backend tests ─────────────────────────────────────
+  test-backend:
+    name: Test backend
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -e '.[backend,dev]'
+
+      - name: Run backend tests
+        run: pytest tests/backend/ -v
+
+  # ── 3d. Worker tests ──────────────────────────────────────
+  test-worker:
+    name: Test worker
+    needs: changes
+    if: needs.changes.outputs.worker == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -e '.[worker,dev]'
+
+      - name: Run worker tests
+        run: pytest tests/worker/ -v
+
+  # ── 3e. Pipeline tests ────────────────────────────────────
+  test-pipelines:
+    name: Test pipelines
+    needs: changes
+    if: needs.changes.outputs.pipelines == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -e '.[pipelines,dev]'
+
+      - name: Run pipeline tests
+        run: pytest tests/pipelines/ -v
+
+  # ── 3f. Frontend tests ─────────────────────────────────────
+  test-frontend:
+    name: Test frontend
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -e '.[frontend,dev]'
+
+      - name: Run frontend tests
+        run: pytest tests/frontend/ -v
+
+  # ── 3g. Docker build smoke-test ────────────────────────────
+  docker-build:
+    name: Docker build (${{ matrix.service }})
+    needs: changes
+    if: |
+      needs.changes.outputs.backend  == 'true' ||
+      needs.changes.outputs.worker   == 'true' ||
+      needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: backend
+            context: ./backend
+          - service: worker
+            context: ./worker
+          - service: frontend
+            context: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image                 # Just build, don't push. Validates the Dockerfile.
+        run: docker build -t ${{ matrix.service }}:ci ${{ matrix.context }}
