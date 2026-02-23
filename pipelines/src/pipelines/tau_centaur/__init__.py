@@ -1,1 +1,0 @@
-"""Tau Centaur pipeline."""
