@@ -10,8 +10,8 @@ COPY pyproject.toml .
 COPY backend/src/ backend/src/
 
 # Create stubs so hatch can resolve the package list.
-RUN mkdir -p worker/src/worker pipelines/src/pipelines frontend/src/frontend \
-    && touch worker/src/worker/__init__.py pipelines/src/pipelines/__init__.py frontend/src/frontend/__init__.py
+RUN mkdir -p frontend/src/frontend \
+    && touch frontend/src/frontend/__init__.py
 
 RUN pip install --no-cache-dir -e '.[backend]'
 

@@ -28,8 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
-      worker:  ${{ steps.filter.outputs.worker }}
-      pipelines: ${{ steps.filter.outputs.pipelines }}
+      frontend: ${{ steps.filter.outputs.frontend }}
     steps:
       - uses: actions/checkout@v4         # Check out the repo so the filter can diff files.
 
@@ -40,12 +39,6 @@ jobs:
             backend:
               - 'backend/**'
               - 'tests/backend/**'
-            worker:
-              - 'worker/**'
-              - 'tests/worker/**'
-            pipelines:
-              - 'pipelines/**'
-              - 'tests/pipelines/**'
             frontend:
               - 'frontend/**'
               - 'tests/frontend/**'
@@ -71,7 +64,7 @@ jobs:
         run: ruff format --check .
 
       - name: Mypy                        # Static type checking.
-        run: mypy backend/src worker/src pipelines/src --ignore-missing-imports
+        run: mypy backend/src frontend/src --ignore-missing-imports
 
   # ── 3c. Backend tests ─────────────────────────────────────
   test-backend:
@@ -92,45 +85,7 @@ jobs:
       - name: Run backend tests
         run: pytest tests/backend/ -v
 
-  # ── 3d. Worker tests ──────────────────────────────────────
-  test-worker:
-    name: Test worker
-    needs: changes
-    if: needs.changes.outputs.worker == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install -e '.[worker,dev]'
-
-      - name: Run worker tests
-        run: pytest tests/worker/ -v
-
-  # ── 3e. Pipeline tests ────────────────────────────────────
-  test-pipelines:
-    name: Test pipelines
-    needs: changes
-    if: needs.changes.outputs.pipelines == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install -e '.[pipelines,dev]'
-
-      - name: Run pipeline tests
-        run: pytest tests/pipelines/ -v
-
-  # ── 3f. Frontend tests ─────────────────────────────────────
+  # ── 3d. Frontend tests ─────────────────────────────────────
   test-frontend:
     name: Test frontend
     needs: changes
@@ -155,7 +110,6 @@ jobs:
     needs: changes
     if: |
       needs.changes.outputs.backend  == 'true' ||
-      needs.changes.outputs.worker   == 'true' ||
       needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     strategy:
@@ -163,8 +117,6 @@ jobs:
         include:
           - service: backend
             context: ./backend
-          - service: worker
-            context: ./worker
           - service: frontend
             context: ./frontend
     steps:

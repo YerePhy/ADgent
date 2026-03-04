@@ -31,20 +31,6 @@ services:
       db:
         condition: service_healthy
 
-  worker:
-    build:
-      context: ..
-      dockerfile: worker/Dockerfile
-    volumes:
-      - ../worker/src:/app/worker/src
-    env_file:
-      - ../.env
-    environment:
-      - ENV=development
-    depends_on:
-      db:
-        condition: service_healthy
-
   frontend:
     build:
       context: ..
