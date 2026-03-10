@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "lang-chain-project"
 version = "0.1.0"
-description = "LangChain + FastAPI starter with Postgres."
+description = "Simple LangChain CLI chat agent."
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
@@ -15,29 +15,16 @@ dependencies = [
   "python-dotenv>=1.0",
   "pydantic>=2.6",
   "pydantic-settings>=2.2",
-]
-
-[project.optional-dependencies]
-backend = [
-  "fastapi>=0.109",
-  "uvicorn[standard]>=0.25",
-  "python-multipart>=0.0.6",
+  "langgraph>=0.2",
   "langchain>=0.1",
   "langchain-community>=0.0.30",
   "langchain-huggingface>=0.0.3",
   "langsmith>=0.1.14",
   "huggingface-hub>=0.21",
-  "httpx>=0.26",
-  "orjson>=3.9",
   "tenacity>=8.2",
-  "sqlalchemy>=2.0",
-  "psycopg2-binary>=2.9",
-  "alembic>=1.13",
 ]
-frontend = [
-  "gradio>=4.0",
-  "httpx>=0.26",
-]
+
+[project.optional-dependencies]
 dev = [
   "pytest>=8.0",
   "pytest-asyncio>=0.23",
@@ -45,6 +32,10 @@ dev = [
   "ruff>=0.2",
   "mypy>=1.8",
   "types-requests>=2.31.0.20240218",
+]
+neuroimaging = [
+  "nilearn>=0.10",
+  "nibabel>=5.2",
 ]
 
 [project.urls]
@@ -57,7 +48,6 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = [
   "backend/src/backend",
-  "frontend/src/frontend",
 ]
 
 [tool.hatch.envs.default]
@@ -65,7 +55,7 @@ type = "virtual"
 path = ".venv"
 
 [tool.hatch.envs.default.scripts]
-start = "uvicorn app.main:app --reload"
+start = "python -m backend.main"
 test = "pytest"
 
 [tool.ruff]
