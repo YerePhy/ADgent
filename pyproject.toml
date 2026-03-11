@@ -47,7 +47,7 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = [
-  "backend/src/backend",
+  "backend",
 ]
 
 [tool.hatch.envs.default]

@@ -25,7 +25,7 @@ jobs:
       - run: pip install ruff mypy
       - run: ruff check .
       - run: ruff format --check .
-      - run: mypy backend/src --ignore-missing-imports
+      - run: mypy backend --ignore-missing-imports
 
   test:
     name: Test

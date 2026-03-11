@@ -10,13 +10,12 @@ from langchain_huggingface import HuggingFaceEndpoint, ChatHuggingFace
 def _create_huggingface() -> BaseChatModel:
     model_repo_id = os.getenv("HF_MODEL_REPO_ID", "")
     llm = HuggingFaceEndpoint(
-        repo_id=model_repo_id,
         model=model_repo_id,
         task="text-generation",
         temperature=0.1,
         max_new_tokens=512,
     )
-    return ChatHuggingFace(llm=llm, model_id=model_repo_id)
+    return ChatHuggingFace(llm=llm)
 
 
 _PROVIDERS: dict[str, Callable[[], BaseChatModel]] = {
