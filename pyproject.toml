@@ -22,6 +22,7 @@ dependencies = [
   "langsmith>=0.1.14",
   "huggingface-hub>=0.21",
   "tenacity>=8.2",
+  "pandas>=2.0",
 ]
 
 [project.optional-dependencies]

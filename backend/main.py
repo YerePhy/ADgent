@@ -1,28 +1,29 @@
-"""Simple LangChain CLI chat agent.
-
-Run with:  python -m backend.main
-"""
-
 import logging
+import os
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
-from backend.chat_model_factory import create_chat_model
-from backend.prompts import load_system_message
-from backend.agent import build_agent
-
 load_dotenv()
+
+from backend.agent import build_agent
+from backend.chat_model_factory import create_chat_model
+from backend.dataloaders import LocalDataLoader
+from backend.prompts import load_system_message
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.CRITICAL)
 
+data_loader = LocalDataLoader(
+    data_dir=os.getenv("DATA_DIR", "./data"),
+    registry=os.getenv("REGISTRY", "./registry.json"),
+)
 chat = create_chat_model()
 agent = build_agent(chat)
-system_message = load_system_message()
+system_message = load_system_message(data_loader)
 
 messages: list = [system_message]
-llm_calls = 0
+llm_calls: int = 0
 
 while True:
     user_input = input("User: ")
