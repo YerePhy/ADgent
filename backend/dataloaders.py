@@ -212,12 +212,3 @@ class LocalDataLoader(DataLoader):
         if file_path not in self._code_registry:
             raise ValueError(f"Code file '{file_path}' not found in registry.")
         return Path(self._code_registry[file_path]).read_text(encoding="utf-8")
-
-
-if __name__ == "__main__":
-    data_loader = LocalDataLoader(data_dir="./data", registry="./registry.json")
-    print("Available tables:", data_loader.list_tables())
-    print("Available text files:", data_loader.list_text_files())
-    print("Available code files:", data_loader.list_code_files())
-    print("Available papers:", data_loader.list_papers())
-    print("Schema of first table:", data_loader.get_table_schema(data_loader.list_tables()[0]))

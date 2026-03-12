@@ -32,13 +32,3 @@ def load_system_message(data_loader: DataLoader) -> SystemMessage:
     content = f"{base_prompt}\n\nAvailable tables:\n{schema_section}"
 
     return SystemMessage(content=content)
-
-
-if __name__ == "__main__":
-    from dotenv import load_dotenv
-
-    load_dotenv()
-
-    data_loader = LocalDataLoader(data_dir="./data", registry="./registry.json")
-    system_message = load_system_message(data_loader)
-    print(system_message.content)
