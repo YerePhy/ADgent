@@ -1,0 +1,21 @@
+{
+  "centaur": {
+    "description": "CenTauR harmonization project for Tau PET quantification",
+    "tables": [
+        "tables/CenTauR_FTP_Calibration_spm8.csv",
+        "tables/Pipeline_constants_SPM12.csv"
+    ],
+    "papers": [
+      "papers/DAD2-15-e12454.pdf"
+    ],
+    "code": [
+        "code/SPM8_Centaur.m",
+        "code/SPM12_Centaur.m"
+    ],
+    "text": [
+        "text/Readme_Centaur_FTP_Calibration.txt",
+        "text/Readme_Centaur_Pipelines_ROIs.txt"
+    ],
+    "notes": "Multi-site harmonization study across 9 PET tracers"
+  }
+}
