@@ -1,5 +1,3 @@
-"""System message construction for the agent."""
-
 from langchain_core.messages import SystemMessage
 
 from backend.dataloaders import DataLoader

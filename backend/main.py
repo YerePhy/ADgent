@@ -1,5 +1,3 @@
-"""Entry point for the ADgent CLI chat agent."""
-
 import logging
 
 from dotenv import load_dotenv
@@ -7,12 +5,12 @@ from langchain_core.messages import HumanMessage
 
 load_dotenv()
 
-from backend.agent import build_agent
-from backend.chat_model_factory import create_chat_model
-from backend.config import load_config
-from backend.dataloaders import LocalDataLoader
-from backend.prompts import load_system_message
-from backend.tools import make_query_table_tool
+from backend.agent import build_agent  # noqa: E402
+from backend.chat_model_factory import create_chat_model  # noqa: E402
+from backend.config import load_config  # noqa: E402
+from backend.dataloaders import LocalDataLoader  # noqa: E402
+from backend.prompts import load_system_message  # noqa: E402
+from backend.tools import make_query_table_tool  # noqa: E402
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.CRITICAL)

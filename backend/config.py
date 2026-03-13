@@ -1,5 +1,3 @@
-"""Application configuration loaded from config.yaml."""
-
 from dataclasses import dataclass
 from pathlib import Path
 

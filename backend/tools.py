@@ -1,12 +1,10 @@
-"""Tool definitions for the agent."""
-
-from langchain_core.tools import tool
+from langchain_core.tools import BaseTool, tool
 from pandasql import sqldf
 
 from backend.dataloaders import DataLoader
 
 
-def make_query_table_tool(data_loader: DataLoader):
+def make_query_table_tool(data_loader: DataLoader) -> BaseTool:
     """Factory that creates a query_table tool bound to a DataLoader.
 
     Args:
