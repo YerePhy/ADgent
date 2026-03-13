@@ -1,5 +1,6 @@
+"""Entry point for the ADgent CLI chat agent."""
+
 import logging
-import os
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
@@ -8,22 +9,29 @@ load_dotenv()
 
 from backend.agent import build_agent
 from backend.chat_model_factory import create_chat_model
+from backend.config import load_config
 from backend.dataloaders import LocalDataLoader
 from backend.prompts import load_system_message
+from backend.tools import make_query_table_tool
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.CRITICAL)
 
+config = load_config()
+
 data_loader = LocalDataLoader(
-    data_dir=os.getenv("DATA_DIR", "./data"),
-    registry=os.getenv("REGISTRY", "./registry.json"),
+    data_dir=config.data_dir,
+    registry=config.registry,
 )
-chat = create_chat_model()
-agent = build_agent(chat)
-system_message = load_system_message(data_loader)
+tools = [make_query_table_tool(data_loader)]
+chat = create_chat_model(
+    provider=config.llm.provider,
+    model_repo_id=config.llm.model_repo_id,
+)
+agent = build_agent(chat, tools, max_llm_calls=config.agent.max_llm_calls)
+system_message = load_system_message(data_loader, config.system_prompt)
 
 messages: list = [system_message]
-llm_calls: int = 0
 
 while True:
     user_input = input("User: ")
@@ -33,8 +41,10 @@ while True:
 
     state = agent.invoke({
         "messages": messages + [HumanMessage(content=user_input)],
-        "llm_calls": llm_calls,
+        "llm_calls": 0,
     })
     messages = state["messages"]
-    llm_calls = state["llm_calls"]
-    print(f"AI: {messages[-1].content}")
+    content = messages[-1].content
+    if isinstance(content, list):
+        content = "\n".join(block["text"] for block in content if block.get("type") == "text")
+    print(f"AI: {content}")

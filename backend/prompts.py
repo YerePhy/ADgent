@@ -1,25 +1,23 @@
-import os
+"""System message construction for the agent."""
 
 from langchain_core.messages import SystemMessage
 
-from backend.dataloaders import DataLoader, LocalDataLoader
+from backend.dataloaders import DataLoader
 
 
-def load_system_message(data_loader: DataLoader) -> SystemMessage:
+def load_system_message(data_loader: DataLoader, system_prompt: str) -> SystemMessage:
     """Build the system message by enriching the base prompt with table schemas.
 
-    Reads the ``SYSTEM_PROMPT`` environment variable as the base behavioural
-    prompt, then appends a description of all available tables (name, columns,
-    and dtypes) sourced from ``data_loader``.
+    Appends a description of all available tables (name, columns, and dtypes)
+    sourced from ``data_loader`` to the provided base behavioural prompt.
 
     Args:
         data_loader: Provides access to available tables and their schemas.
+        system_prompt: Base behavioural prompt for the agent.
 
     Returns:
         A LangChain ``SystemMessage`` with the full system prompt.
     """
-    base_prompt = os.getenv("SYSTEM_PROMPT", "")
-
     schemas = []
     for table_name in data_loader.list_tables():
         schema = data_loader.get_table_schema(table_name)
@@ -29,6 +27,6 @@ def load_system_message(data_loader: DataLoader) -> SystemMessage:
         schemas.append(f"- {schema.name}: {columns_info}")
 
     schema_section = "\n".join(schemas)
-    content = f"{base_prompt}\n\nAvailable tables:\n{schema_section}"
+    content = f"{system_prompt}\n\nAvailable tables:\n{schema_section}"
 
     return SystemMessage(content=content)

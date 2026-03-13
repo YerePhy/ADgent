@@ -1,6 +1,9 @@
 from collections.abc import Callable
 
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import ToolMessage
+from langchain_core.tools import BaseTool
+from langgraph.graph import END
 
 from backend.state import MessageState
 
@@ -22,3 +25,59 @@ def make_llm_call(chat: BaseChatModel) -> Callable[[MessageState], dict]:
         }
 
     return llm_call
+
+
+def make_should_continue(max_llm_calls: int) -> Callable[[MessageState], str]:
+    """Return a routing function that enforces a maximum number of LLM calls.
+
+    Args:
+        max_llm_calls: Maximum number of LLM invocations allowed per turn.
+
+    Returns:
+        A routing function that returns ``"tool_node"`` if tool calls are
+        pending and the call limit has not been reached, or ``END`` otherwise.
+    """
+    def should_continue(state: MessageState) -> str:
+        if state["llm_calls"] >= max_llm_calls:
+            return END
+        if state["messages"][-1].tool_calls:
+            return "tool_node"
+        return END
+
+    return should_continue
+
+
+def make_tool_node(tools: list[BaseTool]) -> Callable[[MessageState], dict]:
+    """Return a tool executor node bound to the given tools.
+
+    Builds a name-to-tool lookup map at construction time. On each invocation,
+    reads the tool calls from the last AIMessage, executes each matching tool,
+    and returns the results as ToolMessages appended to state.
+
+    Args:
+        tools: List of tools available to the agent.
+
+    Returns:
+        A node function that executes requested tool calls and returns
+        the results as ToolMessages.
+    """
+    tool_map: dict[str, BaseTool] = {t.name: t for t in tools}
+
+    def tool_node(state: MessageState) -> dict:
+        last_message = state["messages"][-1]
+        tool_messages = []
+        for tool_call in last_message.tool_calls:
+            tool = tool_map[tool_call["name"]]
+            try:
+                content = str(tool.invoke(tool_call["args"]))
+            except Exception as e:
+                content = f"Tool error: {e}"
+            tool_messages.append(
+                ToolMessage(
+                    content=content,
+                    tool_call_id=tool_call["id"],
+                )
+            )
+        return {"messages": tool_messages}
+
+    return tool_node

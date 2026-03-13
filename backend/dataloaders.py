@@ -116,7 +116,7 @@ class LocalDataLoader(DataLoader):
             for entry in entries:
                 for path in entry.get(key, []):
                     p = Path(path)
-                    registry[p.name] = self._data_dir / p
+                    registry[p.stem] = self._data_dir / p
 
         entries = (
             self._registry.values()
