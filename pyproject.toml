@@ -19,10 +19,15 @@ dependencies = [
   "langchain>=0.1",
   "langchain-community>=0.0.30",
   "langchain-huggingface>=0.0.3",
+  "langchain-anthropic>=0.3",
+  "langchain-google-genai>=2.1",
   "langsmith>=0.1.14",
   "huggingface-hub>=0.21",
   "tenacity>=8.2",
   "pandas>=2.0",
+  "pandasql>=0.7.3",
+  "pyprojroot>=0.3",
+  "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
