@@ -208,8 +208,3 @@ __marimo__/
 
 # dirs
 data/
-
-# files
-registry.json
-
-config.yaml
