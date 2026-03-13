@@ -211,3 +211,5 @@ data/
 
 # files
 registry.json
+
+config.yaml
