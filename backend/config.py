@@ -19,6 +19,21 @@ class LLMConfig:
 
 
 @dataclass
+class EmbeddingsConfig:
+    """Embeddings provider configuration.
+
+    Attributes:
+        provider: Backend provider name (e.g. ``"huggingface"``).
+        model: Embedding model identifier.
+    """
+
+    provider: str
+    model: str
+    chunk_size: int
+    chunk_overlap: int
+
+
+@dataclass
 class AgentConfig:
     """Agent execution configuration.
 
@@ -46,6 +61,7 @@ class Config:
     data_dir: Path
     registry: Path
     llm: LLMConfig
+    embeddings: EmbeddingsConfig
     agent: AgentConfig
     system_prompt: str
 
@@ -71,6 +87,7 @@ def load_config() -> Config:
         data_dir=Path(raw["data_dir"]),
         registry=Path(raw["registry"]),
         llm=LLMConfig(**raw["llm"]),
+        embeddings=EmbeddingsConfig(**raw["embeddings"]),
         agent=AgentConfig(**raw["agent"]),
         system_prompt=raw["system_prompt"],
     )

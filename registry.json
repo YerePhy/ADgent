@@ -1,12 +1,18 @@
 {
   "centaur": {
-    "description": "CenTauR harmonization project for Tau PET quantification",
     "tables": [
         "tables/CenTauR_FTP_Calibration_spm8.csv",
         "tables/Pipeline_constants_SPM12.csv"
     ],
     "papers": [
-      "papers/DAD2-15-e12454.pdf"
+      {
+        "path": "papers/DAD2-15-e12454.pdf",
+        "title": "CenTauR: Toward a universal scale and masks for standardizing tau imaging studies",
+        "authors": "Victor L. Villemagne, Antoine Leuzy, Sandra Sanabria Bohorquez, Santiago Bullich, Hitoshi Shimada, Christopher C. Rowe, Pierrick Bourgeat, Brian Lopresti, Kun Huang, Natasha Krishnadas, Jurgen Fripp, Yuhei Takado, Alexandra Gogola, Davneet Minhas, Robby Weimer, Makoto Higuchi, Andrew Stephens, Oskar Hansson, Vincent Doré, Alzheimer's Disease Neuroimaging Initiative and the AIBL research group"
+      },
+      {
+
+      }
     ],
     "code": [
         "code/SPM8_Centaur.m",
@@ -15,7 +21,29 @@
     "text": [
         "text/Readme_Centaur_FTP_Calibration.txt",
         "text/Readme_Centaur_Pipelines_ROIs.txt"
-    ],
-    "notes": "Multi-site harmonization study across 9 PET tracers"
+    ]
+  },
+  "unconventional markers of alzheimers disease": {
+    "papers": [
+      {
+        "path": "papers/rep_2023.pdf",
+        "title": "Unconventional Markers of Alzheimer's Disease",
+        "authors": "Alexis Moscoso Rial"
+      }
+    ]
+  },
+  "advanced neuroimaging biomarkers of alzheimers disease": {
+    "papers": [
+      {
+        "path": "papers/rep_3487.pdf",
+        "title": "Advanced Neuroimaging Biomarkers of Alzheimer's Disease",
+        "authors": "Alejandro Costoya Sánchez"
+      },
+      {
+        "path": "papers/jamaneurology_costoyasnchez_2023_oi_230055_1695756376_47025.pdf",
+        "title": "Increased Medial Temporal Tau Positron Emission Tomography Uptake in the Absence of Amyloid-β Positivity",
+        "authors": "Alejandro Costoya-Sánchez, Alexis Moscoso, Jesús Silva-Rodríguez, Michael J. Pontecorvo, Michael D. Devous Sr, Pablo Aguiar, Michael Schöll, Michel J. Grothe"
+      }
+    ]
   }
 }

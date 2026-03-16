@@ -7,6 +7,12 @@ llm:
   provider: google
   model_repo_id: gemini-3-flash-preview
 
+embeddings:
+  provider: huggingface
+  model: pritamdeka/S-PubMedBert-MS-MARCO
+  chunk_size: 500
+  chunk_overlap: 50
+
 agent:
   max_llm_calls: 10
 
