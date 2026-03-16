@@ -32,7 +32,6 @@ agent = build_agent(chat, tools, max_llm_calls=config.agent.max_llm_calls)
 system_message = load_system_message(data_loader, config.system_prompt)
 
 messages: list = [system_message]
-breakpoint()
 
 while True:
     user_input = input("User: ")

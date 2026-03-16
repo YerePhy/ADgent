@@ -1,6 +1,33 @@
+from collections.abc import Callable
+from typing import Any
+
 from langchain_core.messages import SystemMessage
 
-from backend.dataloaders import DataLoader
+from backend.dataloaders import DataLoader, PaperInfo
+
+
+def _render_table(table_name: str, data_loader: DataLoader) -> str:
+    schema = data_loader.get_table_schema(table_name)
+    columns_info = ", ".join(
+        f"{col} ({dtype})" for col, dtype in zip(schema.columns, schema.dtypes)
+    )
+    return f"- {schema.name}: {columns_info}"
+
+
+def _render_name(name: str, _data_loader: DataLoader) -> str:
+    return f"- {name}"
+
+
+def _render_paper(paper: PaperInfo, _data_loader: DataLoader) -> str:
+    return f"- {paper.title} ({paper.authors})"
+
+
+_ASSET_SECTIONS: list[tuple[str, str, Callable[[Any, DataLoader], str]]] = [
+    ("tables", "Tables", _render_table),
+    ("text_files", "Text files", _render_name),
+    ("code_files", "Code files", _render_name),
+    ("papers", "Papers", _render_paper),
+]
 
 
 def load_system_message(data_loader: DataLoader, system_prompt: str) -> SystemMessage:
@@ -16,34 +43,22 @@ def load_system_message(data_loader: DataLoader, system_prompt: str) -> SystemMe
     Returns:
         A LangChain ``SystemMessage`` with the full system prompt.
     """
-    sections = []
+    project_sections = []
 
-    tables = data_loader.list_tables()
-    if tables:
-        lines = []
-        for table_name in tables:
-            schema = data_loader.get_table_schema(table_name)
-            columns_info = ", ".join(
-                f"{col} ({dtype})" for col, dtype in zip(schema.columns, schema.dtypes)
-            )
-            lines.append(f"- {schema.name}: {columns_info}")
-        sections.append("Available tables:\n" + "\n".join(lines))
+    for project in data_loader.list_projects():
+        lines = [f"## Project: {project.name}"]
 
-    text_files = data_loader.list_text_files()
-    if text_files:
-        lines = [f"- {name}" for name in text_files]
-        sections.append("Available text files:\n" + "\n".join(lines))
+        if project.description:
+            lines.append(project.description)
 
-    code_files = data_loader.list_code_files()
-    if code_files:
-        lines = [f"- {name}" for name in code_files]
-        sections.append("Available code files:\n" + "\n".join(lines))
+        for field, label, render in _ASSET_SECTIONS:
+            items = getattr(project, field)
+            if items:
+                lines.append(f"{label}:")
+                lines.extend(render(item, data_loader) for item in items)
 
-    papers = data_loader.list_papers()
-    if papers:
-        lines = [f"- {p.title} ({p.authors})" for p in papers]
-        sections.append("Available papers:\n" + "\n".join(lines))
+        project_sections.append("\n".join(lines))
 
-    content = system_prompt + "\n\n" + "\n\n".join(sections)
+    content = system_prompt + "\n\n" + "\n\n".join(project_sections)
 
     return SystemMessage(content=content)
