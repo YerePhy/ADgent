@@ -1,3 +1,5 @@
+"""Data loader abstractions for accessing research data assets."""
+
 import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -21,12 +23,27 @@ class TableSchema:
     dtypes: list[str]
 
 
+@dataclass
+class PaperInfo:
+    """Metadata for a registered paper.
+
+    Attributes:
+        name: The paper's registered stem name.
+        title: The paper's title.
+        authors: The paper's authors.
+    """
+
+    name: str
+    title: str
+    authors: str
+
+
 class DataLoader(ABC):
     """Abstract interface for loading research data assets."""
 
     @abstractmethod
-    def list_papers(self) -> list[str]:
-        """List available PDF papers by registered name."""
+    def list_papers(self) -> list[PaperInfo]:
+        """List available PDF papers with their metadata."""
         ...
 
     @abstractmethod
@@ -59,18 +76,6 @@ class DataLoader(ABC):
         ...
 
     @abstractmethod
-    def read_text(self, file_path: Path | str) -> str:
-        """Read a registered unstructured text file.
-
-        Args:
-            file_path: Registered text file name.
-
-        Returns:
-            File contents as a string.
-        """
-        ...
-
-    @abstractmethod
     def list_text_files(self) -> list[str]:
         """List registered text file names."""
         ...
@@ -80,25 +85,14 @@ class DataLoader(ABC):
         """List registered code file names."""
         ...
 
-    @abstractmethod
-    def read_code(self, file_path: Path | str) -> str:
-        """Read a registered code file.
-
-        Args:
-            file_path: Registered code file name.
-
-        Returns:
-            File contents as a string.
-        """
-        ...
-
 
 class LocalDataLoader(DataLoader):
     """DataLoader implementation backed by a local directory and a JSON registry.
 
     Args:
         data_dir: Root directory containing all data assets.
-        registry: Path to the JSON registry file mapping project names to asset paths.
+        registry: Path to the JSON registry file mapping project names
+            to asset paths.
     """
 
     def __init__(self, data_dir: Path | str, registry: Path | str) -> None:
@@ -108,29 +102,39 @@ class LocalDataLoader(DataLoader):
         self._table_registry: dict[str, Path] = {}
         self._text_registry: dict[str, Path] = {}
         self._code_registry: dict[str, Path] = {}
-        self._paper_registry: dict[str, Path] = {}
-
-        def _update_registry(
-            registry: dict[str, Path], entries: list[dict], key: str
-        ) -> None:
-            for entry in entries:
-                for path in entry.get(key, []):
-                    p = Path(path)
-                    registry[p.stem] = self._data_dir / p
+        self._paper_registry: dict[str, PaperInfo] = {}
 
         entries = (
             self._registry.values()
             if isinstance(self._registry, dict)
             else self._registry
         )
-        _update_registry(self._table_registry, entries, "tables")
-        _update_registry(self._text_registry, entries, "text")
-        _update_registry(self._code_registry, entries, "code")
-        _update_registry(self._paper_registry, entries, "papers")
 
-    def list_papers(self) -> list[str]:
-        """List available PDF papers by registered name."""
-        return sorted(self._paper_registry.keys())
+        for entry in entries:
+            # Tables, text, code: plain string paths
+            for key, reg in (
+                ("tables", self._table_registry),
+                ("text", self._text_registry),
+                ("code", self._code_registry),
+            ):
+                for path in entry.get(key, []):
+                    p = Path(path)
+                    reg[p.stem] = self._data_dir / p
+
+            # Papers: dicts with path, title, authors
+            for paper in entry.get("papers", []):
+                if not paper.get("path"):
+                    continue
+                p = Path(paper["path"])
+                self._paper_registry[p.stem] = PaperInfo(
+                    name=p.stem,
+                    title=paper.get("title", ""),
+                    authors=paper.get("authors", ""),
+                )
+
+    def list_papers(self) -> list[PaperInfo]:
+        """List available PDF papers with their metadata."""
+        return sorted(self._paper_registry.values(), key=lambda p: p.name)
 
     def list_tables(self) -> list[str]:
         """List registered table names."""
@@ -173,22 +177,6 @@ class LocalDataLoader(DataLoader):
             dtypes=df.dtypes.astype(str).tolist(),
         )
 
-    def read_text(self, file_path: str) -> str:
-        """Read a registered unstructured text file.
-
-        Args:
-            file_path: Registered text file name.
-
-        Returns:
-            File contents as a string.
-
-        Raises:
-            ValueError: If ``file_path`` is not found in the registry.
-        """
-        if file_path not in self._text_registry:
-            raise ValueError(f"Text file '{file_path}' not found in registry.")
-        return Path(self._text_registry[file_path]).read_text(encoding="utf-8")
-
     def list_text_files(self) -> list[str]:
         """List registered text file names."""
         return sorted(self._text_registry.keys())
@@ -196,19 +184,3 @@ class LocalDataLoader(DataLoader):
     def list_code_files(self) -> list[str]:
         """List registered code file names."""
         return sorted(self._code_registry.keys())
-
-    def read_code(self, file_path: str) -> str:
-        """Read a registered code file.
-
-        Args:
-            file_path: Registered code file name.
-
-        Returns:
-            File contents as a string.
-
-        Raises:
-            ValueError: If ``file_path`` is not found in the registry.
-        """
-        if file_path not in self._code_registry:
-            raise ValueError(f"Code file '{file_path}' not found in registry.")
-        return Path(self._code_registry[file_path]).read_text(encoding="utf-8")

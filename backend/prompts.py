@@ -41,7 +41,7 @@ def load_system_message(data_loader: DataLoader, system_prompt: str) -> SystemMe
 
     papers = data_loader.list_papers()
     if papers:
-        lines = [f"- {name}" for name in papers]
+        lines = [f"- {p.title} ({p.authors})" for p in papers]
         sections.append("Available papers:\n" + "\n".join(lines))
 
     content = system_prompt + "\n\n" + "\n\n".join(sections)
