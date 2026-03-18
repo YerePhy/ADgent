@@ -10,7 +10,10 @@ from backend.chat_model_factory import create_chat_model  # noqa: E402
 from backend.config import load_config  # noqa: E402
 from backend.dataloaders import LocalDataLoader  # noqa: E402
 from backend.prompts import load_system_message  # noqa: E402
-from backend.tools import make_query_table_tool  # noqa: E402
+from backend.tools import make_query_table_tool, make_search_documents_tool  # noqa: E402
+
+from langchain_community.vectorstores import Chroma  # noqa: E402
+from scripts.ingest import create_embeddings  # noqa: E402
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.CRITICAL)
@@ -21,8 +24,14 @@ data_loader = LocalDataLoader(
     data_dir=config.data_dir,
     registry=config.registry,
 )
+embeddings = create_embeddings(config.embeddings.provider, config.embeddings.model)
+vectorstore = Chroma(
+    persist_directory=str(config.data_dir / "vectorstore"),
+    embedding_function=embeddings,
+)
 tools = [
     make_query_table_tool(data_loader),
+    make_search_documents_tool(vectorstore),
 ]
 chat = create_chat_model(
     provider=config.llm.provider,
