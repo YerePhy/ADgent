@@ -1,5 +1,6 @@
 import logging
 
+import gradio as gr
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
 
@@ -16,7 +17,6 @@ from langchain_community.vectorstores import Chroma  # noqa: E402
 from scripts.ingest import create_embeddings  # noqa: E402
 
 logging.getLogger().setLevel(logging.CRITICAL)
-logger = logging.getLogger(__name__)
 
 config = load_config()
 
@@ -40,20 +40,32 @@ chat = create_chat_model(
 agent = build_agent(chat, tools, max_llm_calls=config.agent.max_llm_calls)
 system_message = load_system_message(data_loader, config.system_prompt)
 
-messages: list = [system_message]
 
-while True:
-    user_input = input("User: ")
+def respond(user_input: str, history: list[dict]) -> str:
+    messages = [system_message]
+    for msg in history:
+        if msg["role"] == "user":
+            messages.append(HumanMessage(content=msg["content"]))
+        else:
+            from langchain_core.messages import AIMessage
+            messages.append(AIMessage(content=msg["content"]))
 
-    if user_input.lower() in ["exit", "quit"]:
-        break
+    messages.append(HumanMessage(content=user_input))
 
-    state = agent.invoke({
-        "messages": messages + [HumanMessage(content=user_input)],
-        "llm_calls": 0,
-    })
-    messages = state["messages"]
-    content = messages[-1].content
+    state = agent.invoke({"messages": messages, "llm_calls": 0})
+    content = state["messages"][-1].content
     if isinstance(content, list):
-        content = "\n".join(block["text"] for block in content if block.get("type") == "text")
-    print(f"AI: {content}")
+        content = "\n".join(
+            block["text"] for block in content if block.get("type") == "text"
+        )
+    return content
+
+
+demo = gr.ChatInterface(
+    fn=respond,
+    title="ADgent",
+    description="Research assistant for Tau PET imaging in Alzheimer's disease.",
+)
+
+if __name__ == "__main__":
+    demo.launch()
