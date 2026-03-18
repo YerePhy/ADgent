@@ -21,6 +21,7 @@ dependencies = [
   "langchain-huggingface>=0.0.3",
   "langchain-anthropic>=0.3",
   "langchain-google-genai>=2.1",
+  "langchain-groq>=0.1",
   "langsmith>=0.1.14",
   "huggingface-hub>=0.21",
   "tenacity>=8.2",

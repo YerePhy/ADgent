@@ -15,8 +15,8 @@ from backend.tools import make_query_table_tool, make_search_documents_tool  # n
 from langchain_community.vectorstores import Chroma  # noqa: E402
 from scripts.ingest import create_embeddings  # noqa: E402
 
+logging.getLogger().setLevel(logging.CRITICAL)
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.CRITICAL)
 
 config = load_config()
 

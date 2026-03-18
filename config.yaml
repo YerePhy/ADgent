@@ -4,8 +4,8 @@ data_dir: ./data
 registry: ./registry.json
 
 llm:
-  provider: google
-  model_repo_id: gemini-3-flash-preview
+  provider: anthropic
+  model_repo_id: claude-haiku-4-5-20251001
 
 embeddings:
   provider: huggingface

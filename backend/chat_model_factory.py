@@ -3,6 +3,7 @@ from collections.abc import Callable
 from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 
 
@@ -48,10 +49,23 @@ def _create_google(model_repo_id: str) -> BaseChatModel:
     return ChatGoogleGenerativeAI(model=model_repo_id)
 
 
+def _create_groq(model_repo_id: str) -> BaseChatModel:
+    """Instantiate a Groq chat model.
+
+    Args:
+        model_repo_id: Groq model identifier (e.g. ``"llama-3.3-70b-versatile"``).
+
+    Returns:
+        A LangChain-compatible chat model backed by the Groq API.
+    """
+    return ChatGroq(model=model_repo_id)
+
+
 _PROVIDERS: dict[str, Callable[[str], BaseChatModel]] = {
     "huggingface": _create_huggingface,
     "anthropic": _create_anthropic,
     "google": _create_google,
+    "groq": _create_groq,
 }
 
 
