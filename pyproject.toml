@@ -33,6 +33,7 @@ dependencies = [
   "chromadb>=0.5",
   "langchain-text-splitters>=0.2",
   "sentence-transformers>=2.0",
+  "gradio>=4.0",
 ]
 
 [project.optional-dependencies]
@@ -67,6 +68,7 @@ path = ".venv"
 
 [tool.hatch.envs.default.scripts]
 start = "python -m backend.main"
+app = "python -m backend.app"
 test = "pytest"
 
 [tool.ruff]
