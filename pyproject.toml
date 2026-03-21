@@ -20,8 +20,6 @@ dependencies = [
   "langchain-community>=0.0.30",
   "langchain-huggingface>=0.0.3",
   "langchain-anthropic>=0.3",
-  "langchain-google-genai>=2.1",
-  "langchain-groq>=0.1",
   "langsmith>=0.1.14",
   "huggingface-hub>=0.21",
   "tenacity>=8.2",
@@ -29,8 +27,9 @@ dependencies = [
   "pandasql>=0.7.3",
   "pyprojroot>=0.3",
   "pyyaml>=6.0",
-  "pypdf>=4.0",
+  "docling>=2.0",
   "chromadb>=0.5",
+  "langchain-chroma>=0.2",
   "langchain-text-splitters>=0.2",
   "sentence-transformers>=2.0",
   "gradio>=4.0",
@@ -44,6 +43,18 @@ dev = [
   "ruff>=0.2",
   "mypy>=1.8",
   "types-requests>=2.31.0.20240218",
+]
+providers = [
+  "langchain-google-genai>=2.1",
+  "langchain-groq>=0.1",
+]
+pdf = [
+  "pypdf>=4.0",
+]
+plotting = [
+  "matplotlib>=3.8",
+  "numpy>=1.26",
+  "seaborn>=0.13",
 ]
 neuroimaging = [
   "nilearn>=0.10",

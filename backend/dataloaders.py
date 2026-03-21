@@ -24,18 +24,20 @@ class TableSchema:
 
 
 @dataclass
-class PaperInfo:
-    """Metadata for a registered paper.
+class PdfInfo:
+    """Metadata for a registered PDF document (paper, thesis, etc.).
 
     Attributes:
-        name: The paper's registered stem name.
-        title: The paper's title.
-        authors: The paper's authors.
+        name: The file's stem name.
+        title: The document's title.
+        authors: The document's authors.
+        type: Document type (e.g. ``"paper"``, ``"thesis"``).
     """
 
     name: str
     title: str
     authors: str
+    type: str
 
 
 @dataclass
@@ -48,7 +50,7 @@ class ProjectInfo:
         tables: Table stem names belonging to this project.
         text_files: Text file stem names belonging to this project.
         code_files: Code file stem names belonging to this project.
-        papers: Paper metadata belonging to this project.
+        pdfs: PDF document metadata belonging to this project.
     """
 
     name: str
@@ -56,15 +58,15 @@ class ProjectInfo:
     tables: list[str]
     text_files: list[str]
     code_files: list[str]
-    papers: list[PaperInfo]
+    pdfs: list[PdfInfo]
 
 
 class DataLoader(ABC):
     """Abstract interface for loading research data assets."""
 
     @abstractmethod
-    def list_papers(self) -> list[PaperInfo]:
-        """List available PDF papers with their metadata."""
+    def list_pdfs(self) -> list[PdfInfo]:
+        """List available PDF documents with their metadata."""
         ...
 
     @abstractmethod
@@ -128,7 +130,7 @@ class LocalDataLoader(DataLoader):
         self._table_registry: dict[str, Path] = {}
         self._text_registry: dict[str, Path] = {}
         self._code_registry: dict[str, Path] = {}
-        self._paper_registry: dict[str, PaperInfo] = {}
+        self._pdf_registry: dict[str, PdfInfo] = {}
         self._project_registry: dict[str, ProjectInfo] = {}
 
         if isinstance(self._registry, dict):
@@ -140,11 +142,16 @@ class LocalDataLoader(DataLoader):
             project_tables: list[str] = []
             project_text: list[str] = []
             project_code: list[str] = []
-            project_papers: list[PaperInfo] = []
+            project_pdfs: list[PdfInfo] = []
 
-            # Tables, text, code: plain string paths
+            # Tables: list of dicts with at least a "path" key
+            for table_entry in entry.get("tables", []):
+                p = Path(table_entry["path"])
+                self._table_registry[p.stem] = self._data_dir / p
+                project_tables.append(p.stem)
+
+            # Text and code: plain string paths
             for key, reg, project_list in (
-                ("tables", self._table_registry, project_tables),
                 ("text", self._text_registry, project_text),
                 ("code", self._code_registry, project_code),
             ):
@@ -153,18 +160,19 @@ class LocalDataLoader(DataLoader):
                     reg[p.stem] = self._data_dir / p
                     project_list.append(p.stem)
 
-            # Papers: dicts with path, title, authors
-            for paper in entry.get("papers", []):
-                if not paper.get("path"):
+            # PDFs: dicts with path, title, authors, type
+            for pdf in entry.get("pdfs", []):
+                if not pdf.get("path"):
                     continue
-                p = Path(paper["path"])
-                info = PaperInfo(
+                p = Path(pdf["path"])
+                info = PdfInfo(
                     name=p.stem,
-                    title=paper.get("title", ""),
-                    authors=paper.get("authors", ""),
+                    title=pdf.get("title", ""),
+                    authors=pdf.get("authors", ""),
+                    type=pdf.get("type", "paper"),
                 )
-                self._paper_registry[p.stem] = info
-                project_papers.append(info)
+                self._pdf_registry[p.stem] = info
+                project_pdfs.append(info)
 
             self._project_registry[str(project_name)] = ProjectInfo(
                 name=str(project_name),
@@ -172,12 +180,12 @@ class LocalDataLoader(DataLoader):
                 tables=project_tables,
                 text_files=project_text,
                 code_files=project_code,
-                papers=project_papers,
+                pdfs=project_pdfs,
             )
 
-    def list_papers(self) -> list[PaperInfo]:
-        """List available PDF papers with their metadata."""
-        return sorted(self._paper_registry.values(), key=lambda p: p.name)
+    def list_pdfs(self) -> list[PdfInfo]:
+        """List available PDF documents with their metadata."""
+        return sorted(self._pdf_registry.values(), key=lambda p: p.name)
 
     def list_tables(self) -> list[str]:
         """List registered table names."""

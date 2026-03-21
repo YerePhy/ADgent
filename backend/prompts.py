@@ -3,7 +3,7 @@ from typing import Any
 
 from langchain_core.messages import SystemMessage
 
-from backend.dataloaders import DataLoader, PaperInfo
+from backend.dataloaders import DataLoader, PdfInfo
 
 
 def _render_table(table_name: str, data_loader: DataLoader) -> str:
@@ -18,15 +18,15 @@ def _render_name(name: str, _data_loader: DataLoader) -> str:
     return f"- {name}"
 
 
-def _render_paper(paper: PaperInfo, _data_loader: DataLoader) -> str:
-    return f"- {paper.title} ({paper.authors})"
+def _render_pdf(pdf: PdfInfo, _data_loader: DataLoader) -> str:
+    return f"- [{pdf.type}] {pdf.title} ({pdf.authors})"
 
 
 _ASSET_SECTIONS: list[tuple[str, str, Callable[[Any, DataLoader], str]]] = [
     ("tables", "Tables", _render_table),
     ("text_files", "Text files", _render_name),
     ("code_files", "Code files", _render_name),
-    ("papers", "Papers", _render_paper),
+    ("pdfs", "PDFs", _render_pdf),
 ]
 
 

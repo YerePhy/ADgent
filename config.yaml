@@ -7,11 +7,14 @@ llm:
   provider: anthropic
   model_repo_id: claude-haiku-4-5-20251001
 
+ingestion:
+  pdf_page_chunk_size: 20
+
 embeddings:
   provider: huggingface
   model: pritamdeka/S-PubMedBert-MS-MARCO
-  chunk_size: 500
-  chunk_overlap: 50
+  chunk_size: 750
+  chunk_overlap: 100
 
 agent:
   max_llm_calls: 10
@@ -19,6 +22,10 @@ agent:
 system_prompt: |
   You are a research assistant for Tau Positron Emission Tomography (PET) imaging researchers
   and clinicians, specialized in Alzheimer's disease and related dementias.
-  You will ask questions based on available databases, academic papers, books and clinical
-  guidelines to help them with their research and clinical work.
-  If you don't know the answer, say you don't know.
+  You have access to the following tools to help answer questions:
+  - query_table: Query registered data tables using SQL syntax.
+  - search_documents: Search indexed papers, text files, and code files by semantic similarity.
+  When a question could benefit from project data or literature, prefer using these tools
+  to ground your response in the available sources.
+  If you don't know the answer, say you don't know but provide feasible hypothesis
+  or insights.

@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -6,6 +7,8 @@ from langchain_core.tools import BaseTool
 from langgraph.graph import END
 
 from backend.state import MessageState
+
+logger = logging.getLogger(__name__)
 
 
 def make_llm_call(chat: BaseChatModel) -> Callable[[MessageState], dict]:
@@ -18,7 +21,10 @@ def make_llm_call(chat: BaseChatModel) -> Callable[[MessageState], dict]:
         A node function that invokes the chat model with the current state messages.
     """
     def llm_call(state: MessageState) -> dict:
+        last = state["messages"][-1]
+        logger.debug("LLM input: %s", last.content)
         response = chat.invoke(state["messages"])
+        logger.debug("LLM output: %s", response.content)
         return {
             "messages": [response],
             "llm_calls": state["llm_calls"] + 1,
@@ -68,13 +74,16 @@ def make_tool_node(tools: list[BaseTool]) -> Callable[[MessageState], dict]:
         tool_messages = []
         for tool_call in last_message.tool_calls:
             tool = tool_map[tool_call["name"]]
+            logger.info("Tool call: %s(%s)", tool_call["name"], tool_call["args"])
             try:
                 content = str(tool.invoke(tool_call["args"]))
             except Exception as e:
+                logger.error("Tool error: %s — %s", tool_call["name"], e)
                 content = f"Tool error: {e}"
             tool_messages.append(
                 ToolMessage(
                     content=content,
+                    name=tool_call["name"],
                     tool_call_id=tool_call["id"],
                 )
             )

@@ -2,50 +2,57 @@
   "centaur": {
     "description": "Tau positron emission tomography (PET) imaging is the most recent addition to the arsenal of tools for the in vivo assessment of neurodegenerative proteinopathies. Differences between tracers, quantitative pipelines and regions of interest lead to disparities in PET-derived standardized uptake value ratios (SUVR) measurements which conspire to decrease reproducibility and pose a challenge when trying to compare tau outcomes across cohorts or in therapeutic trials that use different tau tracers. The aim of CenTauR is to standardize tau PET results by establishing the location and amount of abnormality of tau aggregates in the brain, and expressing them in a universal standard scale, the units of which are termed CenTauRs.",
     "tables": [
-        "tables/CenTauR_FTP_Calibration_spm8.csv",
-        "tables/Pipeline_constants_SPM12.csv"
+      {
+        "path": "tables/CenTauR_FTP_Calibration_spm8.csv",
+        "origin": "manual"
+      },
+      {
+        "path": "tables/Pipeline_constants_SPM12.csv",
+        "origin": "manual"
+      }
     ],
-    "papers": [
+    "pdfs": [
       {
         "path": "papers/DAD2-15-e12454.pdf",
         "title": "CenTauR: Toward a universal scale and masks for standardizing tau imaging studies",
-        "authors": "Victor L. Villemagne, Antoine Leuzy, Sandra Sanabria Bohorquez, Santiago Bullich, Hitoshi Shimada, Christopher C. Rowe, Pierrick Bourgeat, Brian Lopresti, Kun Huang, Natasha Krishnadas, Jurgen Fripp, Yuhei Takado, Alexandra Gogola, Davneet Minhas, Robby Weimer, Makoto Higuchi, Andrew Stephens, Oskar Hansson, Vincent Doré, Alzheimer's Disease Neuroimaging Initiative and the AIBL research group"
-      },
-      {
-
+        "authors": "Victor L. Villemagne, Antoine Leuzy, Sandra Sanabria Bohorquez, Santiago Bullich, Hitoshi Shimada, Christopher C. Rowe, Pierrick Bourgeat, Brian Lopresti, Kun Huang, Natasha Krishnadas, Jurgen Fripp, Yuhei Takado, Alexandra Gogola, Davneet Minhas, Robby Weimer, Makoto Higuchi, Andrew Stephens, Oskar Hansson, Vincent Doré, Alzheimer's Disease Neuroimaging Initiative and the AIBL research group",
+        "type": "paper"
       }
     ],
     "code": [
-        "code/SPM8_Centaur.m",
-        "code/SPM12_Centaur.m"
+      "code/SPM8_Centaur.m",
+      "code/SPM12_Centaur.m"
     ],
     "text": [
-        "text/Readme_Centaur_FTP_Calibration.txt",
-        "text/Readme_Centaur_Pipelines_ROIs.txt"
+      "text/Readme_Centaur_FTP_Calibration.txt",
+      "text/Readme_Centaur_Pipelines_ROIs.txt"
     ]
   },
   "unconventional markers of alzheimers disease": {
     "description": "Although typically conceptualized as a cortical disease, recent neuropathological and neuroimaging investigations on Alzheimer Disease suggest that other brain structures play an important role in the pathogenesis and progression of this devastating condition. In this thesis, we explored novel markers of Alzheimer Disease beyond the classical cortical pathology measures of amyloid, tau, and neurodegeneration. We focused on the role of white matter abnormalities, assessed with magnetic resonance imaging but also with amyloid positron emission tomography, in predicting early pathologic changes and disease progression, as well as on the added value of cognition to amyloid, tau, and neurodegeneration biomarkers. Overall, we found that these unconventional markers provide useful information to detect the earliest pathological changes of the disease, providing a better understanding of the mechanisms that lead to amyloid deposition and cognitive decline.",
-    "papers": [
+    "pdfs": [
       {
         "path": "papers/rep_2023.pdf",
         "title": "Unconventional Markers of Alzheimer's Disease",
-        "authors": "Alexis Moscoso Rial"
+        "authors": "Alexis Moscoso Rial",
+        "type": "thesis"
       }
     ]
   },
   "advanced neuroimaging biomarkers of alzheimers disease": {
     "description": "The emergence of tau PET radiotracers has allowed the in-vivo evaluation of pathological tau accumulation in the brain. However, quantification of tau PET scans is still hampered by important technical challenges that limit its applicability. In the first part of this thesis, we address the technical impact of off-target binding and the benefits of partial volume correction on the accuracy of tau PET quantification in cross-sectional and longitudinal studies. In the second part, we use the knowledge generated to study the pathological progression of PART, a neuropathological entity characterized by the presence of tau deposits in the medial temporal lobe in the absence of Aβ pathology, and show that it follows a separate, more benign trajectory to that of individuals in the Alzheimer's disease continuum.",
-    "papers": [
+    "pdfs": [
       {
         "path": "papers/rep_3487.pdf",
         "title": "Advanced Neuroimaging Biomarkers of Alzheimer's Disease",
-        "authors": "Alejandro Costoya Sánchez"
+        "authors": "Alejandro Costoya Sánchez",
+        "type": "thesis"
       },
       {
         "path": "papers/jamaneurology_costoyasnchez_2023_oi_230055_1695756376_47025.pdf",
         "title": "Increased Medial Temporal Tau Positron Emission Tomography Uptake in the Absence of Amyloid-β Positivity",
-        "authors": "Alejandro Costoya-Sánchez, Alexis Moscoso, Jesús Silva-Rodríguez, Michael J. Pontecorvo, Michael D. Devous Sr, Pablo Aguiar, Michael Schöll, Michel J. Grothe"
+        "authors": "Alejandro Costoya-Sánchez, Alexis Moscoso, Jesús Silva-Rodríguez, Michael J. Pontecorvo, Michael D. Devous Sr, Pablo Aguiar, Michael Schöll, Michel J. Grothe",
+        "type": "paper"
       }
     ]
   }

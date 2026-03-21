@@ -1,8 +1,12 @@
+import logging
+
 from langchain_core.tools import BaseTool, tool
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from pandasql import sqldf
 
 from backend.dataloaders import DataLoader
+
+logger = logging.getLogger(__name__)
 
 
 def make_query_table_tool(data_loader: DataLoader) -> BaseTool:
@@ -34,8 +38,10 @@ def make_query_table_tool(data_loader: DataLoader) -> BaseTool:
         Raises:
             ValueError: If table_name is not found in the registry.
         """
+        logger.info("Querying table '%s': %s", table_name, sql)
         df = data_loader.load_table(table_name)
         result = sqldf(sql, {table_name: df})
+        logger.info("Query returned %d rows", len(result))
         return result.to_string(index=False)
 
     return query_table
@@ -66,7 +72,9 @@ def make_search_documents_tool(vectorstore: Chroma, k: int = 5) -> BaseTool:
         Returns:
             The top matching document chunks with their metadata.
         """
+        logger.info("Searching documents: '%s'", query)
         results = vectorstore.similarity_search_with_score(query, k=k)
+        logger.info("Search returned %d results", len(results))
         if not results:
             return "No relevant documents found."
 

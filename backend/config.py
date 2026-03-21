@@ -34,6 +34,18 @@ class EmbeddingsConfig:
 
 
 @dataclass
+class IngestionConfig:
+    """Document ingestion configuration.
+
+    Attributes:
+        pdf_page_chunk_size: Number of pages per chunk when splitting large
+            PDFs for Docling conversion.  Recommended range: 10–30.
+    """
+
+    pdf_page_chunk_size: int
+
+
+@dataclass
 class AgentConfig:
     """Agent execution configuration.
 
@@ -61,6 +73,7 @@ class Config:
     data_dir: Path
     registry: Path
     llm: LLMConfig
+    ingestion: IngestionConfig
     embeddings: EmbeddingsConfig
     agent: AgentConfig
     system_prompt: str
@@ -87,6 +100,7 @@ def load_config() -> Config:
         data_dir=Path(raw["data_dir"]),
         registry=Path(raw["registry"]),
         llm=LLMConfig(**raw["llm"]),
+        ingestion=IngestionConfig(**raw["ingestion"]),
         embeddings=EmbeddingsConfig(**raw["embeddings"]),
         agent=AgentConfig(**raw["agent"]),
         system_prompt=raw["system_prompt"],
