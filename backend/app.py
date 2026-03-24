@@ -50,7 +50,6 @@ agent = build_agent(chat, tools, max_llm_calls=config.agent.max_llm_calls)
 system_message = load_system_message(data_loader, config.system_prompt)
 logger.info("System prompt: %s", config.system_prompt)
 logger.info("Agent built successfully (max_llm_calls=%d)", config.agent.max_llm_calls)
-breakpoint()
 
 
 def respond(user_input: str, history: list[dict]) -> str:
