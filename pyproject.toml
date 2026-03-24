@@ -33,6 +33,7 @@ dependencies = [
   "langchain-text-splitters>=0.2",
   "sentence-transformers>=2.0",
   "gradio>=4.0",
+  "uv>=0.6",
 ]
 
 [project.optional-dependencies]
