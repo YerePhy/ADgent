@@ -7,3 +7,7 @@ services:
       - .env
     stdin_open: true
     tty: true
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./data:/app/data

@@ -9,12 +9,12 @@ llm:
 
 ingestion:
   pdf_page_chunk_size: 20
+  chunk_size: 750
+  chunk_overlap: 100
 
 embeddings:
   provider: huggingface
   model: pritamdeka/S-PubMedBert-MS-MARCO
-  chunk_size: 750
-  chunk_overlap: 100
 
 agent:
   max_llm_calls: 10

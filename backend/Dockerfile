@@ -4,9 +4,9 @@ FROM python:3.12-slim
 WORKDIR /app
 
 COPY pyproject.toml .
+RUN pip install --no-cache-dir -e '.[providers]'
+
 COPY config.yaml .
 COPY backend/ backend/
 
-RUN pip install --no-cache-dir -e '.'
-
-CMD ["python", "-m", "backend.main"]
+CMD ["python", "-m", "backend.app"]

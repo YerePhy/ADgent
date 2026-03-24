@@ -1,4 +1,5 @@
 import logging.config
+import os
 from pathlib import Path
 
 import yaml
@@ -17,7 +18,7 @@ from backend.prompts import load_system_message
 from backend.tools import make_query_table_tool, make_search_documents_tool
 
 from langchain_chroma import Chroma
-from scripts.ingest import create_embeddings
+from backend.embeddings import create_embeddings
 
 _logging_cfg = here("logging.yaml")
 Path(_logging_cfg).parent.joinpath("logs").mkdir(exist_ok=True)
@@ -85,4 +86,7 @@ demo = gr.ChatInterface(
 )
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(
+        server_name=os.getenv("GRADIO_SERVER_NAME", "127.0.0.1"),
+        server_port=int(os.getenv("GRADIO_SERVER_PORT", 7860)),
+    )

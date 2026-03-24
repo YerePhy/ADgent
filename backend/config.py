@@ -29,8 +29,6 @@ class EmbeddingsConfig:
 
     provider: str
     model: str
-    chunk_size: int
-    chunk_overlap: int
 
 
 @dataclass
@@ -40,9 +38,13 @@ class IngestionConfig:
     Attributes:
         pdf_page_chunk_size: Number of pages per chunk when splitting large
             PDFs for Docling conversion.  Recommended range: 10–30.
+        chunk_size: Maximum number of characters per text chunk.
+        chunk_overlap: Number of overlapping characters between consecutive chunks.
     """
 
     pdf_page_chunk_size: int
+    chunk_size: int
+    chunk_overlap: int
 
 
 @dataclass

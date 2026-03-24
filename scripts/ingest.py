@@ -9,17 +9,16 @@ import json
 import logging
 import logging.config
 import tempfile
-from collections.abc import Callable
 from pathlib import Path
 
 import yaml
 from docling.document_converter import DocumentConverter
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_core.documents import Document
-from langchain_core.embeddings import Embeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+from backend.embeddings import create_embeddings
 from pypdf import PdfReader, PdfWriter
 from pyprojroot import here
 
@@ -35,44 +34,6 @@ _rapidocr_logger.propagate = False
 
 logger = logging.getLogger(__name__)
 
-
-def _create_huggingface_embeddings(model: str) -> Embeddings:
-    """Create a HuggingFace sentence-transformers embedding instance.
-
-    Args:
-        model: HuggingFace model identifier
-            (e.g. ``"sentence-transformers/all-MiniLM-L6-v2"``).
-
-    Returns:
-        A LangChain-compatible embeddings instance.
-    """
-    return HuggingFaceEmbeddings(model_name=model)
-
-
-_EMBEDDING_PROVIDERS: dict[str, Callable[[str], Embeddings]] = {
-    "huggingface": _create_huggingface_embeddings,
-}
-
-
-def create_embeddings(provider: str, model: str) -> Embeddings:
-    """Instantiate an embeddings model for the given provider.
-
-    Args:
-        provider: Backend provider name (e.g. ``"huggingface"``).
-        model: Model identifier passed to the provider factory.
-
-    Returns:
-        A LangChain-compatible embeddings instance.
-
-    Raises:
-        ValueError: If the provider is not registered.
-    """
-    if provider not in _EMBEDDING_PROVIDERS:
-        raise ValueError(
-            f"Unknown embedding provider '{provider}'. "
-            f"Available: {', '.join(_EMBEDDING_PROVIDERS)}"
-        )
-    return _EMBEDDING_PROVIDERS[provider](model)
 
 
 def _convert_pdf_in_chunks(
@@ -278,7 +239,7 @@ if __name__ == "__main__":
         persist_directory=str(config.data_dir / "vectorstore"),
         embedding_provider=config.embeddings.provider,
         embedding_model=config.embeddings.model,
-        chunk_size=config.embeddings.chunk_size,
-        chunk_overlap=config.embeddings.chunk_overlap,
+        chunk_size=config.ingestion.chunk_size,
+        chunk_overlap=config.ingestion.chunk_overlap,
         pdf_page_chunk_size=config.ingestion.pdf_page_chunk_size,
     )
