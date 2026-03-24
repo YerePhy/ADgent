@@ -6,7 +6,7 @@ import yaml
 import gradio as gr
 from pyprojroot import here
 from dotenv import load_dotenv
-from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 load_dotenv()
 
@@ -59,7 +59,6 @@ def respond(user_input: str, history: list[dict]) -> str:
         if msg["role"] == "user":
             messages.append(HumanMessage(content=msg["content"]))
         else:
-            from langchain_core.messages import AIMessage
             messages.append(AIMessage(content=msg["content"]))
 
     messages.append(HumanMessage(content=user_input))

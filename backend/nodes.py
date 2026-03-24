@@ -73,9 +73,11 @@ def make_tool_node(tools: list[BaseTool]) -> Callable[[MessageState], dict]:
         last_message = state["messages"][-1]
         tool_messages = []
         for tool_call in last_message.tool_calls:
-            tool = tool_map[tool_call["name"]]
             logger.info("Tool call: %s(%s)", tool_call["name"], tool_call["args"])
             try:
+                tool = tool_map.get(tool_call["name"])
+                if tool is None:
+                    raise ValueError(f"Unknown tool: {tool_call['name']}")
                 content = str(tool.invoke(tool_call["args"]))
             except Exception as e:
                 logger.error("Tool error: %s — %s", tool_call["name"], e)

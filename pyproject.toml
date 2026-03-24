@@ -29,6 +29,7 @@ dependencies = [
   "chromadb>=0.5",
   "langchain-chroma>=0.2",
   "langchain-text-splitters>=0.2",
+  "torch",
   "sentence-transformers>=2.0",
   "gradio>=4.0",
 ]
@@ -81,6 +82,14 @@ path = ".venv"
 start = "python -m backend.main"
 app = "python -m backend.app"
 test = "pytest"
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
 [tool.ruff]
 line-length = 100

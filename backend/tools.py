@@ -1,7 +1,7 @@
 import logging
 
 from langchain_core.tools import BaseTool, tool
-from langchain_chroma import Chroma
+from langchain_core.vectorstores import VectorStore
 from pandasql import sqldf
 
 from backend.dataloaders import DataLoader
@@ -47,7 +47,7 @@ def make_query_table_tool(data_loader: DataLoader) -> BaseTool:
     return query_table
 
 
-def make_search_documents_tool(vectorstore: Chroma, k: int = 5) -> BaseTool:
+def make_search_documents_tool(vectorstore: VectorStore, k: int = 5) -> BaseTool:
     """Factory that creates a search_documents tool bound to a vectorstore.
 
     Args:
