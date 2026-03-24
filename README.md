@@ -2,7 +2,7 @@
 ADgent is a ReAct RAG-based agent built with LangGraph that leverages a multimodal knowledge base (PDFs, CSVs, text and code files) and custom tools to retrieve information and provide specialized answers about Alzheimer's Disease biomarkers.
 
 ## System Overview
-![](docs/figures/system_design.png)
+![](docs/figures/system_design.svg)
 
 ## Short Description
 
