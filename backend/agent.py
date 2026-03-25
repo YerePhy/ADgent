@@ -11,6 +11,7 @@ def build_agent(
     chat: BaseChatModel,
     tools: list[BaseTool],
     max_llm_calls: int,
+    checkpointer=None,
 ) -> CompiledStateGraph:
     """Build and compile the agent graph.
 
@@ -18,6 +19,7 @@ def build_agent(
         chat: The chat model to bind tools to and use for the LLM call node.
         tools: List of tools available to the agent.
         max_llm_calls: Maximum number of LLM invocations allowed per turn.
+        checkpointer: Optional LangGraph checkpointer for persisting conversation state.
 
     Returns:
         A compiled LangGraph state graph ready for invocation.
@@ -32,4 +34,4 @@ def build_agent(
         "llm_call", make_should_continue(max_llm_calls), ["tool_node", END]
     )
     builder.add_edge("tool_node", "llm_call")
-    return builder.compile()
+    return builder.compile(checkpointer=checkpointer)

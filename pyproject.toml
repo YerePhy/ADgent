@@ -32,6 +32,7 @@ dependencies = [
   "torch",
   "sentence-transformers>=2.0",
   "gradio>=4.0",
+  "langgraph-checkpoint-sqlite>=3.0.3",
 ]
 
 [project.optional-dependencies]
