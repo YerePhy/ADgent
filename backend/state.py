@@ -11,5 +11,6 @@ class MessageState(TypedDict):
         messages: Accumulated list of messages; new messages are appended via operator.add.
         llm_calls: Running count of LLM invocations.
     """
+
     messages: Annotated[list[AnyMessage], operator.add]
     llm_calls: int

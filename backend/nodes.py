@@ -1,8 +1,8 @@
 import logging
 from collections.abc import Callable
 
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import ToolMessage
+from langchain_core.runnables import Runnable
+from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.tools import BaseTool
 from langgraph.graph import END
 
@@ -11,7 +11,7 @@ from backend.state import MessageState
 logger = logging.getLogger(__name__)
 
 
-def make_llm_call(chat: BaseChatModel) -> Callable[[MessageState], dict]:
+def make_llm_call(chat: Runnable) -> Callable[[MessageState], dict]:
     """Return an LLM call node bound to the given chat model.
 
     Args:
@@ -20,6 +20,7 @@ def make_llm_call(chat: BaseChatModel) -> Callable[[MessageState], dict]:
     Returns:
         A node function that invokes the chat model with the current state messages.
     """
+
     def llm_call(state: MessageState) -> dict:
         last = state["messages"][-1]
         logger.debug("LLM input: %s", last.content)
@@ -43,10 +44,12 @@ def make_should_continue(max_llm_calls: int) -> Callable[[MessageState], str]:
         A routing function that returns ``"tool_node"`` if tool calls are
         pending and the call limit has not been reached, or ``END`` otherwise.
     """
+
     def should_continue(state: MessageState) -> str:
         if state["llm_calls"] >= max_llm_calls:
             return END
-        if state["messages"][-1].tool_calls:
+        last = state["messages"][-1]
+        if isinstance(last, AIMessage) and last.tool_calls:
             return "tool_node"
         return END
 
@@ -71,6 +74,8 @@ def make_tool_node(tools: list[BaseTool]) -> Callable[[MessageState], dict]:
 
     def tool_node(state: MessageState) -> dict:
         last_message = state["messages"][-1]
+        if not isinstance(last_message, AIMessage):
+            return {"messages": []}
         tool_messages = []
         for tool_call in last_message.tool_calls:
             logger.info("Tool call: %s(%s)", tool_call["name"], tool_call["args"])

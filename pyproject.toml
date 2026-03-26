@@ -30,6 +30,7 @@ dependencies = [
   "langchain-chroma>=0.2",
   "langchain-text-splitters>=0.2",
   "torch",
+  "torchvision",
   "sentence-transformers>=2.0",
   "gradio>=4.0",
   "langgraph-checkpoint-sqlite>=3.0.3",
@@ -45,6 +46,8 @@ dev = [
   "ruff>=0.2",
   "mypy>=1.8",
   "types-requests>=2.31.0.20240218",
+  "types-PyYAML>=6.0",
+  "pandas-stubs>=2.0",
 ]
 providers = [
   "langchain-google-genai>=2.1",
@@ -91,6 +94,17 @@ explicit = true
 
 [tool.uv.sources]
 torch = { index = "pytorch-cpu" }
+torchvision = { index = "pytorch-cpu" }
+
+[tool.mypy]
+python_version = "3.12"
+
+[[tool.mypy.overrides]]
+module = ["pandasql.*", "pypdf.*", "pyprojroot.*", "torch.*", "sentence_transformers.*", "gradio.*", "chromadb.*", "langchain_chroma.*", "langchain_huggingface.*", "langchain_groq.*", "langgraph.*"]
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint.per-file-ignores]
+"backend/app.py" = ["E402"]

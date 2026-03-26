@@ -34,7 +34,7 @@ def _create_anthropic(model_repo_id: str) -> BaseChatModel:
     Returns:
         A LangChain-compatible chat model backed by the Anthropic API.
     """
-    return ChatAnthropic(model=model_repo_id)
+    return ChatAnthropic(model_name=model_repo_id)  # type: ignore[call-arg]
 
 
 def _create_google(model_repo_id: str) -> BaseChatModel:
@@ -83,8 +83,5 @@ def create_chat_model(provider: str, model_repo_id: str) -> BaseChatModel:
         ValueError: If the configured provider is not supported.
     """
     if provider not in _PROVIDERS:
-        raise ValueError(
-            f"Unknown LLM provider '{provider}'. "
-            f"Available: {', '.join(_PROVIDERS)}"
-        )
+        raise ValueError(f"Unknown LLM provider '{provider}'. Available: {', '.join(_PROVIDERS)}")
     return _PROVIDERS[provider](model_repo_id)

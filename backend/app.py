@@ -8,7 +8,8 @@ import yaml
 import gradio as gr
 from pyprojroot import here
 from dotenv import load_dotenv
-from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_core.messages import BaseMessage, HumanMessage, ToolMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.sqlite import SqliteSaver
 
 load_dotenv()
@@ -80,7 +81,8 @@ def login(username: str):
 
 
 def load_history(thread_id: str):
-    prior = agent.get_state({"configurable": {"thread_id": thread_id}})
+    config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
+    prior = agent.get_state(config)
     history = []
     for msg in prior.values.get("messages", []):
         if isinstance(msg, HumanMessage):
@@ -97,13 +99,13 @@ def respond(user_input: str, history: list[dict], thread_id: str):
     if not user_input.strip():
         return history, ""
 
-    config = {"configurable": {"thread_id": thread_id}}
+    config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
 
     # Include the system message only on the first invocation for this thread
     # so it is not duplicated across turns when the checkpointer appends messages.
     prior = agent.get_state(config)
     has_prior = bool(prior.values.get("messages"))
-    new_messages = [] if has_prior else [system_message]
+    new_messages: list[BaseMessage] = [] if has_prior else [system_message]
     new_messages.append(HumanMessage(content=user_input))
 
     state = agent.invoke({"messages": new_messages, "llm_calls": 0}, config=config)

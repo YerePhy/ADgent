@@ -2,8 +2,10 @@
 
 import json
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
@@ -133,6 +135,7 @@ class LocalDataLoader(DataLoader):
         self._pdf_registry: dict[str, PdfInfo] = {}
         self._project_registry: dict[str, ProjectInfo] = {}
 
+        items: Iterable[tuple[Any, Any]]
         if isinstance(self._registry, dict):
             items = self._registry.items()
         else:
@@ -191,7 +194,7 @@ class LocalDataLoader(DataLoader):
         """List registered table names."""
         return list(self._table_registry.keys())
 
-    def load_table(self, name: str) -> pd.DataFrame:
+    def load_table(self, name: Path | str) -> pd.DataFrame:
         """Load a table by its registered name.
 
         Args:
@@ -203,9 +206,10 @@ class LocalDataLoader(DataLoader):
         Raises:
             ValueError: If ``name`` is not found in the registry.
         """
-        if name not in self._table_registry:
+        key = str(name)
+        if key not in self._table_registry:
             raise ValueError(f"Table '{name}' not found in registry.")
-        return pd.read_csv(self._table_registry[name])
+        return pd.read_csv(self._table_registry[key])
 
     def get_table_schema(self, name: str) -> TableSchema:
         """Return the schema for a registered table.

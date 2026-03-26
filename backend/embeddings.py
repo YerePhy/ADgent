@@ -5,6 +5,7 @@ from langchain_core.embeddings import Embeddings
 
 def _create_huggingface(model: str) -> Embeddings:
     from langchain_huggingface import HuggingFaceEmbeddings
+
     return HuggingFaceEmbeddings(model_name=model)
 
 
@@ -28,7 +29,6 @@ def create_embeddings(provider: str, model: str) -> Embeddings:
     """
     if provider not in _PROVIDERS:
         raise ValueError(
-            f"Unknown embedding provider '{provider}'. "
-            f"Available: {', '.join(_PROVIDERS)}"
+            f"Unknown embedding provider '{provider}'. Available: {', '.join(_PROVIDERS)}"
         )
     return _PROVIDERS[provider](model)

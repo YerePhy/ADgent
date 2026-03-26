@@ -35,7 +35,6 @@ _rapidocr_logger.propagate = False
 logger = logging.getLogger(__name__)
 
 
-
 def _convert_pdf_in_chunks(
     pdf_path: Path,
     page_chunk_size: int,
@@ -60,7 +59,9 @@ def _convert_pdf_in_chunks(
         result = converter.convert(str(pdf_path))
         md = result.document.export_to_markdown()
         if not md.strip():
-            logger.warning("    Empty text extracted from %s (all %d pages)", pdf_path.name, total_pages)
+            logger.warning(
+                "    Empty text extracted from %s (all %d pages)", pdf_path.name, total_pages
+            )
         return md
 
     markdown_parts: list[str] = []
@@ -82,7 +83,9 @@ def _convert_pdf_in_chunks(
 
         md = result.document.export_to_markdown()
         if not md.strip():
-            logger.warning("    Empty text extracted from %s pages %d–%d", pdf_path.name, start + 1, end)
+            logger.warning(
+                "    Empty text extracted from %s pages %d–%d", pdf_path.name, start + 1, end
+            )
         markdown_parts.append(md)
 
     return "\n\n".join(markdown_parts)

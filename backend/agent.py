@@ -27,8 +27,8 @@ def build_agent(
     chat_with_tools = chat.bind_tools(tools)
 
     builder = StateGraph(MessageState)
-    builder.add_node("llm_call", make_llm_call(chat_with_tools))
-    builder.add_node("tool_node", make_tool_node(tools))
+    builder.add_node("llm_call", make_llm_call(chat_with_tools))  # type: ignore[call-overload]
+    builder.add_node("tool_node", make_tool_node(tools))  # type: ignore[call-overload]
     builder.add_edge(START, "llm_call")
     builder.add_conditional_edges(
         "llm_call", make_should_continue(max_llm_calls), ["tool_node", END]
