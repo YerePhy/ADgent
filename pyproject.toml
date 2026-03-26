@@ -1,0 +1,110 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lang-chain-project"
+version = "0.1.0"
+description = "Simple LangChain CLI chat agent."
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+  { name = "Jeremiah Poveda Martínez", email = "jereasap@gmail.com" }
+]
+dependencies = [
+  "python-dotenv>=1.0",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "langgraph>=0.2",
+  "langchain>=0.1",
+  "langchain-community>=0.0.30",
+  "langchain-huggingface>=0.0.3",
+  "langchain-anthropic>=0.3",
+  "langsmith>=0.1.14",
+  "tenacity>=8.2",
+  "pandas>=2.0",
+  "pandasql>=0.7.3",
+  "pyprojroot>=0.3",
+  "pyyaml>=6.0",
+  "chromadb>=0.5",
+  "langchain-chroma>=0.2",
+  "langchain-text-splitters>=0.2",
+  "torch",
+  "torchvision",
+  "sentence-transformers>=2.0",
+  "gradio>=4.0",
+  "langgraph-checkpoint-sqlite>=3.0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "docling>=2.0",
+  "uv>=0.6",
+  "pytest>=8.0",
+  "pytest-asyncio>=0.23",
+  "httpx>=0.26",
+  "ruff>=0.2",
+  "mypy>=1.8",
+  "types-requests>=2.31.0.20240218",
+  "types-PyYAML>=6.0",
+  "pandas-stubs>=2.0",
+]
+providers = [
+  "langchain-google-genai>=2.1",
+  "langchain-groq>=0.1",
+]
+pdf = [
+  "pypdf>=4.0",
+]
+plotting = [
+  "matplotlib>=3.8",
+  "numpy>=1.26",
+  "seaborn>=0.13",
+]
+neuroimaging = [
+  "nilearn>=0.10",
+  "nibabel>=5.2",
+]
+
+[project.urls]
+homepage = "https://example.com"
+repository = "https://example.com/lang-chain-project"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = [
+  "backend",
+]
+
+[tool.hatch.envs.default]
+type = "virtual"
+path = ".venv"
+
+[tool.hatch.envs.default.scripts]
+start = "python -m backend.main"
+app = "python -m backend.app"
+test = "pytest"
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+torchvision = { index = "pytorch-cpu" }
+
+[tool.mypy]
+python_version = "3.12"
+
+[[tool.mypy.overrides]]
+module = ["pandasql.*", "pypdf.*", "pyprojroot.*", "torch.*", "sentence_transformers.*", "gradio.*", "chromadb.*", "langchain_chroma.*", "langchain_huggingface.*", "langchain_groq.*", "langgraph.*"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint.per-file-ignores]
+"backend/app.py" = ["E402"]
