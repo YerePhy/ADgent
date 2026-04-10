@@ -6,7 +6,9 @@
       "Bash(head -50 /home/jere/Repositories/ADgent/tests/backend/*.py)",
       "Bash(git mv:*)",
       "Bash(git commit -m ':*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)"
     ]
   }
 }
