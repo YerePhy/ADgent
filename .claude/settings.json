@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(du -sh /home/jere/Repositories/ADgent/data/*)",
+      "Bash(head -50 /home/jere/Repositories/ADgent/tests/backend/*.py)"
+    ]
+  }
+}
