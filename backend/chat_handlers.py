@@ -1,3 +1,4 @@
+import hmac
 import hashlib
 import logging
 
@@ -17,8 +18,11 @@ def extract_text(content) -> str:
 
 
 def make_thread_id(session_salt: str, username: str) -> str:
-    raw = f"{session_salt}:{username.strip().lower()}"
-    return hashlib.sha256(raw.encode()).hexdigest()[:16]
+    return hmac.new(
+        session_salt.encode(),
+        username.strip().lower().encode(),
+        hashlib.sha256,
+    ).hexdigest()[:16]
 
 
 def login(username: str, ctx: AppContext):

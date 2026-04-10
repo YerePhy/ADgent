@@ -75,11 +75,11 @@ def build_app_context(config: Config) -> AppContext:
     )
     system_message = load_system_message(data_loader, config.system_prompt)
 
-    session_salt = os.getenv("SESSION_SALT", "adgent-default-salt")
-    if session_salt == "adgent-default-salt":
-        logger.warning(
-            "SESSION_SALT is using the hardcoded default. "
-            "Two deployments without this env var will generate identical thread_ids for the same username."
+    session_salt = os.getenv("SESSION_SALT")
+    if not session_salt:
+        raise RuntimeError(
+            "SESSION_SALT env var must be set. "
+            "Generate one with: python -c \"import secrets; print(secrets.token_hex(32))\""
         )
 
     logger.info("System prompt: %s", config.system_prompt)
