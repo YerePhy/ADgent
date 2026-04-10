@@ -44,6 +44,8 @@ def build_app_context(config: Config) -> AppContext:
     db_path = db_path / os.getenv("DATABASE_NAME", "history.sqlite")
 
     conn = sqlite3.connect(str(db_path), check_same_thread=False)
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA busy_timeout=5000")
     memory = SqliteSaver(conn)
 
     data_loader = LocalDataLoader(
