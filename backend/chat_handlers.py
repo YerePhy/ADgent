@@ -43,7 +43,8 @@ def load_history(thread_id: str, ctx: AppContext):
 
 def respond(user_input: str, history: list[dict], thread_id: str, ctx: AppContext):
     if not user_input.strip():
-        return history, ""
+        yield history, ""
+        return
 
     runnable_cfg: RunnableConfig = {"configurable": {"thread_id": thread_id}}
 
@@ -52,14 +53,23 @@ def respond(user_input: str, history: list[dict], thread_id: str, ctx: AppContex
     new_messages: list[BaseMessage] = [] if has_prior else [ctx.system_message]
     new_messages.append(HumanMessage(content=user_input))
 
-    state = ctx.agent.invoke({"messages": new_messages, "llm_calls": 0}, config=runnable_cfg)
-    content = extract_text(state["messages"][-1].content)
+    history = history + [{"role": "user", "content": user_input}, {"role": "assistant", "content": ""}]
+    tool_names: list[str] = []
 
-    tool_msgs = [m for m in state["messages"] if isinstance(m, ToolMessage)]
-    if tool_msgs:
-        tool_info = "\n".join(f"- {tm.name}" for tm in tool_msgs)
-        content = f"*Tools used:*\n{tool_info}\n\n{content}"
+    for chunk, metadata in ctx.agent.stream(
+        {"messages": new_messages, "llm_calls": 0},
+        config=runnable_cfg,
+        stream_mode="messages",
+    ):
+        if isinstance(chunk, ToolMessage):
+            tool_names.append(chunk.name)
+        elif metadata.get("langgraph_node") == "llm_call":
+            text = extract_text(chunk.content) if chunk.content else ""
+            if text:
+                history[-1]["content"] += text
+                yield history, ""
 
-    history.append({"role": "user", "content": user_input})
-    history.append({"role": "assistant", "content": content})
-    return history, ""
+    if tool_names:
+        tool_info = "*Tools used:*\n" + "\n".join(f"- {n}" for n in tool_names)
+        history[-1]["content"] = tool_info + "\n\n" + history[-1]["content"]
+        yield history, ""

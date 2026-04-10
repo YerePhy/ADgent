@@ -1,6 +1,7 @@
 import dataclasses
 import logging
 import os
+import sqlite3
 from pathlib import Path
 
 from langchain_chroma import Chroma
@@ -42,7 +43,8 @@ def build_app_context(config: Config) -> AppContext:
     db_path.mkdir(exist_ok=True, parents=True)
     db_path = db_path / os.getenv("DATABASE_NAME", "history.sqlite")
 
-    memory = SqliteSaver.from_conn_string(str(db_path))
+    conn = sqlite3.connect(str(db_path), check_same_thread=False)
+    memory = SqliteSaver(conn)
 
     data_loader = LocalDataLoader(
         data_dir=config.data_dir,

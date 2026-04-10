@@ -1,7 +1,7 @@
 import logging
 from collections.abc import Callable
 
-from langchain_core.runnables import Runnable
+from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.tools import BaseTool
 from langgraph.graph import END
@@ -11,7 +11,7 @@ from backend.state import MessageState
 logger = logging.getLogger(__name__)
 
 
-def make_llm_call(chat: Runnable) -> Callable[[MessageState], dict]:
+def make_llm_call(chat: Runnable) -> Callable[[MessageState, RunnableConfig], dict]:
     """Return an LLM call node bound to the given chat model.
 
     Args:
@@ -21,10 +21,10 @@ def make_llm_call(chat: Runnable) -> Callable[[MessageState], dict]:
         A node function that invokes the chat model with the current state messages.
     """
 
-    def llm_call(state: MessageState) -> dict:
+    def llm_call(state: MessageState, config: RunnableConfig) -> dict:
         last = state["messages"][-1]
         logger.debug("LLM input: %s", last.content)
-        response = chat.invoke(state["messages"])
+        response = chat.invoke(state["messages"], config=config)
         logger.debug("LLM output: %s", response.content)
         return {
             "messages": [response],
