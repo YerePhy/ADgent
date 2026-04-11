@@ -74,11 +74,8 @@ class LocalFileStore(FileStore):
         Path(store_key).unlink(missing_ok=True)
 
 
-# ---------------------------------------------------------------------------
-# Backend registry
-# Each entry is a callable(**kwargs) -> FileStore.
+# Backend registry — each entry is a callable(**kwargs) -> FileStore.
 # Lambdas document exactly which kwargs each backend requires.
-# ---------------------------------------------------------------------------
 
 _BACKENDS: dict[str, Callable[..., FileStore]] = {
     "local": lambda **kw: LocalFileStore(base_dir=Path(kw["base_dir"])),

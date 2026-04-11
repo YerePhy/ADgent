@@ -115,10 +115,7 @@ class SqliteUploadStore(UploadStore):
         return [UploadRecord(*row) for row in rows]
 
 
-# ---------------------------------------------------------------------------
-# Backend registry
-# Each entry is a callable(**kwargs) -> UploadStore.
-# ---------------------------------------------------------------------------
+# Backend registry — each entry is a callable(**kwargs) -> UploadStore.
 
 _BACKENDS: dict[str, Callable[..., UploadStore]] = {
     "sqlite": lambda **kw: SqliteUploadStore(conn=kw["conn"]),

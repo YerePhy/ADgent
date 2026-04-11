@@ -91,12 +91,9 @@ def make_search_documents_tool(vectorstore: VectorStore, k: int = 5) -> BaseTool
     return search_documents
 
 
-# ---------------------------------------------------------------------------
-# Tool registry
-# Each entry is a callable(infra) -> BaseTool.
+# Tool registry — each entry is a callable(infra) -> BaseTool.
 # To add a new tool: implement a factory above, register it here, and list it
 # under agent.tools in config.yaml.
-# ---------------------------------------------------------------------------
 
 _TOOLS: dict[str, Callable[[Infrastructure], BaseTool]] = {
     "query_table":      lambda infra: make_query_table_tool(infra.data_loader),

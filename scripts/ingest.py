@@ -18,6 +18,7 @@ from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from backend.config import load_config
 from backend.embeddings import create_embeddings
 from pypdf import PdfReader, PdfWriter
 from pyprojroot import here
@@ -233,8 +234,6 @@ def build_vectorstore(
 
 
 if __name__ == "__main__":
-    from backend.config import load_config
-
     config = load_config()
     build_vectorstore(
         registry_path=str(config.registry),
