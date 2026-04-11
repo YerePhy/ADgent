@@ -1,6 +1,6 @@
 """Shared infrastructure container.
 
-Kept in its own module to avoid circular imports between app_context
+Kept in its own module to avoid circular imports between context
 (which builds Infrastructure) and tools (which consumes it).
 """
 
@@ -19,7 +19,7 @@ class Infrastructure:
     """Low-level application plumbing: persistence, retrieval, and file storage.
 
     Constructed once at startup; can be injected in tests with mocks so that
-    build_app_context never needs to touch real I/O during unit testing.
+    build_app_context (in backend.context) never needs to touch real I/O during unit testing.
 
     Attributes:
         memory: LangGraph SQLite checkpointer for conversation state.

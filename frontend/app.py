@@ -10,7 +10,7 @@ from pyprojroot import here
 
 load_dotenv()
 
-from backend.app_context import build_app_context, build_infrastructure
+from backend.context import build_app_context, build_infrastructure
 from backend.config import load_config
 from frontend.chat_handlers import load_history, login, respond, upload_file
 
