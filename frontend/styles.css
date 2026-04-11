@@ -1,0 +1,14 @@
+#upload-btn, #send-btn {
+    min-width: 44px !important;
+    max-width: 44px !important;
+    align-self: stretch !important;
+}
+#upload-btn button, #send-btn button {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 44px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    font-size: 26px !important;
+    line-height: 1 !important;
+}

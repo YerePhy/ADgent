@@ -10,5 +10,6 @@ COPY config.yaml .
 COPY logging.yaml .
 COPY registry.json .
 COPY backend/ backend/
+COPY frontend/ frontend/
 
-CMD ["uv", "run", "python", "-m", "backend.app"]
+CMD ["uv", "run", "python", "-m", "frontend.app"]

@@ -1,16 +1,43 @@
 services:
+  # One-shot service that pre-downloads the HuggingFace embedding model into the
+  # shared model_cache volume before the agent starts.  Using a separate init
+  # container avoids blocking the agent on a potentially slow first download and
+  # keeps the main service restart-safe (restart: "no" means it never re-runs).
+  model-init:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    volumes:
+      - model_cache:/root/.cache/huggingface
+    command: >
+      uv run python -c
+      "from sentence_transformers import SentenceTransformer;
+      SentenceTransformer('pritamdeka/S-PubMedBert-MS-MARCO')"
+    restart: "no"
+
+  # Main Gradio application.  Waits for model-init to finish successfully so
+  # the embedding model is guaranteed to be cached before the first request.
   agent:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    depends_on:
+      model-init:
+        condition: service_completed_successfully
     env_file:
-      - .env
+      - .env                                    # API keys, session salt, etc.
     environment:
-      - DATABASE_PATH=${CONTAINER_DATABASE_PATH}
+      - DATABASE_PATH=${CONTAINER_DATABASE_PATH} # SQLite path inside the container
     stdin_open: true
     tty: true
     ports:
-      - "7860:7860"
+      - "7860:7860"                             # Gradio default port
     volumes:
-      - ./data:/app/data
-      - ${LOCAL_DATABASE_PATH}:${CONTAINER_DATABASE_PATH}
+      - ./data:/app/data                        # Registry, vectorstore, uploads
+      - ${LOCAL_DATABASE_PATH}:${CONTAINER_DATABASE_PATH}  # Persist SQLite across restarts
+      - model_cache:/root/.cache/huggingface    # Reuse pre-downloaded model weights
+
+# Named volume shared between model-init and agent so the model is downloaded
+# only once and survives container restarts.
+volumes:
+  model_cache:

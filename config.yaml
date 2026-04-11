@@ -18,6 +18,16 @@ embeddings:
 
 agent:
   max_llm_calls: 10
+  tools:
+    - query_table
+    - search_documents
+
+file_store:
+  backend: local
+  base_dir: ./data/uploads
+
+upload_store:
+  backend: sqlite
 
 system_prompt: |
   You are a research assistant for Tau Positron Emission Tomography (PET) imaging researchers

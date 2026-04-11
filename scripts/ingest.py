@@ -18,7 +18,9 @@ from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+from backend.config import load_config
 from backend.embeddings import create_embeddings
+from scripts.config import load_ingest_config
 from pypdf import PdfReader, PdfWriter
 from pyprojroot import here
 
@@ -233,16 +235,15 @@ def build_vectorstore(
 
 
 if __name__ == "__main__":
-    from backend.config import load_config
-
     config = load_config()
+    ingest_config = load_ingest_config()
     build_vectorstore(
         registry_path=str(config.registry),
         data_dir=str(config.data_dir),
         persist_directory=str(config.data_dir / "vectorstore"),
         embedding_provider=config.embeddings.provider,
         embedding_model=config.embeddings.model,
-        chunk_size=config.ingestion.chunk_size,
-        chunk_overlap=config.ingestion.chunk_overlap,
-        pdf_page_chunk_size=config.ingestion.pdf_page_chunk_size,
+        chunk_size=ingest_config.chunk_size,
+        chunk_overlap=ingest_config.chunk_overlap,
+        pdf_page_chunk_size=ingest_config.pdf_page_chunk_size,
     )
