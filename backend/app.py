@@ -13,6 +13,7 @@ load_dotenv()
 from backend.app_context import build_app_context, build_infrastructure
 from backend.chat_handlers import load_history, login, respond, upload_file
 from backend.config import load_config
+from backend.gradio_compat import NiftiFile
 
 _logging_cfg = here("logging.yaml")
 _logging_cfg.parent.joinpath("logs").mkdir(exist_ok=True)
@@ -39,8 +40,8 @@ with gr.Blocks(title="ADgent") as demo:
 
     with gr.Column(visible=False) as chat_panel:
         chatbot = gr.Chatbot(label="ADgent")
-        file_upload = gr.File(
-            label="Upload NIfTI",
+        file_upload = NiftiFile(
+            label="Upload NIfTI (.nii / .nii.gz)",
             file_types=[".nii", ".nii.gz"],
             file_count="single",
         )
