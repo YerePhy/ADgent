@@ -8,7 +8,9 @@ from backend.dataloaders import DataLoader, PdfInfo, ProjectInfo, TableSchema
 from backend.prompts import _render_name, _render_pdf, _render_table, load_system_message
 
 
-def _make_loader(*projects: ProjectInfo, schema_map: dict[str, TableSchema] | None = None) -> DataLoader:
+def _make_loader(
+    *projects: ProjectInfo, schema_map: dict[str, TableSchema] | None = None
+) -> DataLoader:
     loader = MagicMock(spec=DataLoader)
     loader.list_projects.return_value = list(projects)
     if schema_map:

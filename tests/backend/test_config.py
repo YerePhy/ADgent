@@ -7,7 +7,6 @@ import pytest
 
 from backend.config import (
     AgentConfig,
-    Config,
     EmbeddingsConfig,
     FileStoreConfig,
     LLMConfig,

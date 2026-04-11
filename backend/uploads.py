@@ -96,6 +96,7 @@ class SqliteUploadStore(UploadStore):
             (thread_id, store_key, filename, uploaded_at),
         )
         self._conn.commit()
+        assert cur.lastrowid is not None
         return UploadRecord(
             id=cur.lastrowid,
             thread_id=thread_id,
