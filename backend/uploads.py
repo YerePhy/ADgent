@@ -119,12 +119,10 @@ class SqliteUploadStore(UploadStore):
 
 _BACKENDS: dict[str, Callable[..., UploadStore]] = {
     "sqlite": lambda **kw: SqliteUploadStore(conn=kw["conn"]),
-    # "postgres": lambda **kw: PostgresUploadStore(dsn=kw["dsn"]),
 }
 
 _KNOWN_KWARGS: dict[str, set[str]] = {
     "sqlite": {"conn"},
-    # "postgres": {"dsn"},
 }
 
 

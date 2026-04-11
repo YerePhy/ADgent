@@ -4,7 +4,6 @@ Backends are registered in ``_BACKENDS`` as factory callables.
 To add a new backend (e.g. S3), implement ``FileStore`` and add one entry there.
 """
 
-import tempfile
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from pathlib import Path
@@ -79,12 +78,8 @@ class LocalFileStore(FileStore):
 
 _BACKENDS: dict[str, Callable[..., FileStore]] = {
     "local": lambda **kw: LocalFileStore(base_dir=Path(kw["base_dir"])),
-    # Phase 3 — uncomment and implement S3FileStore:
-    # "s3": lambda **kw: S3FileStore(bucket=kw["bucket"], client=kw.get("client")),
 }
 
-# kwargs that are not consumed by a specific backend are silently ignored so
-# callers can pass a uniform dict (e.g. base_dir + bucket) regardless of backend.
 _KNOWN_KWARGS: dict[str, set[str]] = {
     "local": {"base_dir"},
 }

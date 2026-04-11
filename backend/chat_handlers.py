@@ -67,11 +67,10 @@ def upload_file(
         ctx: Application context.
 
     Returns:
-        Tuple of (updated history, None). None clears the file component on
-        every path — success, failure, or cleared input.
+        Updated chat history.
     """
     if file_path is None:
-        return history, None
+        return history
 
     path = Path(file_path)
     filename = path.name
@@ -80,11 +79,11 @@ def upload_file(
     suffix = "".join(path.suffixes)  # e.g. ".nii" or ".nii.gz"
     if suffix not in _ALLOWED_SUFFIXES:
         msg = f"Unsupported file type '{suffix}'. Only .nii and .nii.gz are accepted."
-        return history + [{"role": "assistant", "content": f"Upload failed: {msg}"}], None
+        return history + [{"role": "assistant", "content": f"Upload failed: {msg}"}]
 
     if not thread_id:
         msg = "No active session. Please log in before uploading."
-        return history + [{"role": "assistant", "content": f"Upload failed: {msg}"}], None
+        return history + [{"role": "assistant", "content": f"Upload failed: {msg}"}]
 
     try:
         data = path.read_bytes()
@@ -92,10 +91,10 @@ def upload_file(
         ctx.upload_store.save_upload(thread_id, store_key, filename)
     except Exception:
         logger.exception("Failed to save upload: filename=%s thread_id=%s", filename, thread_id)
-        return history + [{"role": "assistant", "content": f"Upload failed: could not save **{filename}**. Check the logs."}], None
+        return history + [{"role": "assistant", "content": f"Upload failed: could not save **{filename}**. Check the logs."}]
 
     logger.info("File uploaded: filename=%s thread_id=%s store_key=%s", filename, thread_id, store_key)
-    return history + [{"role": "assistant", "content": f"File uploaded: **{filename}**"}], None
+    return history + [{"role": "assistant", "content": f"File uploaded: **{filename}**"}]
 
 
 def respond(user_input: str, history: list[dict], thread_id: str, ctx: AppContext):
