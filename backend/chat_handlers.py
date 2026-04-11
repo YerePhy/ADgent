@@ -67,7 +67,8 @@ def upload_file(
         ctx: Application context.
 
     Returns:
-        Tuple of (updated history, None) — None clears the file component.
+        Tuple of (updated history, None). None clears the file component on
+        every path — success, failure, or cleared input.
     """
     if file_path is None:
         return history, None
@@ -94,8 +95,7 @@ def upload_file(
         return history + [{"role": "assistant", "content": f"Upload failed: could not save **{filename}**. Check the logs."}], None
 
     logger.info("File uploaded: filename=%s thread_id=%s store_key=%s", filename, thread_id, store_key)
-    history = history + [{"role": "assistant", "content": f"File uploaded: **{filename}**"}]
-    return history, None
+    return history + [{"role": "assistant", "content": f"File uploaded: **{filename}**"}], None
 
 
 def respond(user_input: str, history: list[dict], thread_id: str, ctx: AppContext):
