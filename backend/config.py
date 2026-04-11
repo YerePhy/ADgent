@@ -32,22 +32,6 @@ class EmbeddingsConfig:
 
 
 @dataclass
-class IngestionConfig:
-    """Document ingestion configuration.
-
-    Attributes:
-        pdf_page_chunk_size: Number of pages per chunk when splitting large
-            PDFs for Docling conversion.  Recommended range: 10–30.
-        chunk_size: Maximum number of characters per text chunk.
-        chunk_overlap: Number of overlapping characters between consecutive chunks.
-    """
-
-    pdf_page_chunk_size: int
-    chunk_size: int
-    chunk_overlap: int
-
-
-@dataclass
 class AgentConfig:
     """Agent execution configuration.
 
@@ -106,7 +90,6 @@ class Config:
     data_dir: Path
     registry: Path
     llm: LLMConfig
-    ingestion: IngestionConfig
     embeddings: EmbeddingsConfig
     agent: AgentConfig
     file_store: FileStoreConfig
@@ -135,7 +118,6 @@ def load_config() -> Config:
         data_dir=Path(raw["data_dir"]),
         registry=Path(raw["registry"]),
         llm=LLMConfig(**raw["llm"]),
-        ingestion=IngestionConfig(**raw["ingestion"]),
         embeddings=EmbeddingsConfig(**raw["embeddings"]),
         agent=AgentConfig(**raw["agent"]),
         file_store=FileStoreConfig(**raw.get("file_store", {})),
