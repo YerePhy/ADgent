@@ -1,10 +1,9 @@
 from collections.abc import Callable
-
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.embeddings import Embeddings
 
 
 def _create_huggingface(model: str) -> Embeddings:
-    from langchain_huggingface import HuggingFaceEmbeddings
 
     return HuggingFaceEmbeddings(model_name=model)
 
