@@ -10,8 +10,8 @@ from pyprojroot import here
 
 load_dotenv()
 
-from backend.app_context import build_app_context
-from backend.chat_handlers import load_history, login, respond
+from backend.app_context import build_app_context, build_infrastructure
+from backend.chat_handlers import load_history, login, respond, upload_file
 from backend.config import load_config
 
 _logging_cfg = here("logging.yaml")
@@ -21,11 +21,13 @@ with open(_logging_cfg) as _f:
 
 logger = logging.getLogger(__name__)
 
-ctx = build_app_context(load_config())
+_config = load_config()
+ctx = build_app_context(_config, build_infrastructure(_config))
 
 _login = functools.partial(login, ctx=ctx)
 _load_history = functools.partial(load_history, ctx=ctx)
 _respond = functools.partial(respond, ctx=ctx)
+_upload_file = functools.partial(upload_file, ctx=ctx)
 
 with gr.Blocks(title="ADgent") as demo:
     thread_id_state = gr.State(value=None)
@@ -37,6 +39,11 @@ with gr.Blocks(title="ADgent") as demo:
 
     with gr.Column(visible=False) as chat_panel:
         chatbot = gr.Chatbot(label="ADgent")
+        file_upload = gr.File(
+            label="Upload NIfTI",
+            file_types=[".nii", ".nii.gz"],
+            file_count="single",
+        )
         msg_input = gr.Textbox(label="Message", placeholder="Ask something...", show_label=False)
         send_btn = gr.Button("Send")
 
@@ -48,6 +55,12 @@ with gr.Blocks(title="ADgent") as demo:
         fn=_load_history,
         inputs=[thread_id_state],
         outputs=[chatbot],
+    )
+
+    file_upload.upload(
+        fn=_upload_file,
+        inputs=[file_upload, chatbot, thread_id_state],
+        outputs=[chatbot, file_upload],
     )
 
     send_btn.click(

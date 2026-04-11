@@ -86,6 +86,12 @@ _BACKENDS: dict[str, Callable[..., FileStore]] = {
     # "s3": lambda **kw: S3FileStore(bucket=kw["bucket"], client=kw.get("client")),
 }
 
+# kwargs that are not consumed by a specific backend are silently ignored so
+# callers can pass a uniform dict (e.g. base_dir + bucket) regardless of backend.
+_KNOWN_KWARGS: dict[str, set[str]] = {
+    "local": {"base_dir"},
+}
+
 
 def create_file_store(backend: str, **kwargs) -> FileStore:
     """Instantiate a FileStore for the given backend name.
@@ -106,4 +112,6 @@ def create_file_store(backend: str, **kwargs) -> FileStore:
             f"Unknown file store backend {backend!r}. "
             f"Available: {', '.join(_BACKENDS)}"
         )
-    return factory(**kwargs)
+    allowed = _KNOWN_KWARGS.get(backend)
+    filtered = {k: v for k, v in kwargs.items() if v is not None and (allowed is None or k in allowed)}
+    return factory(**filtered)

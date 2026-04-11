@@ -53,9 +53,40 @@ class AgentConfig:
 
     Attributes:
         max_llm_calls: Maximum number of LLM invocations per conversation turn.
+        tools: Ordered list of tool names to enable (must be registered in tools._TOOLS).
     """
 
     max_llm_calls: int
+    tools: list[str]
+
+
+@dataclass
+class FileStoreConfig:
+    """File storage backend configuration.
+
+    Attributes:
+        backend: Backend name registered in ``filestore._BACKENDS`` (e.g. ``"local"``).
+        base_dir: Root directory for local storage (ignored by remote backends).
+        bucket: S3 bucket name (only required when ``backend="s3"``).
+    """
+
+    backend: str
+    base_dir: str = "./data/uploads"
+    bucket: str | None = None
+
+
+@dataclass
+class UploadStoreConfig:
+    """Upload metadata store configuration.
+
+    Attributes:
+        backend: Backend name registered in ``uploads._BACKENDS`` (e.g. ``"sqlite"``).
+            When adding postgres support, set to ``"postgres"`` and supply ``dsn``.
+        dsn: Connection string (only required when ``backend="postgres"``).
+    """
+
+    backend: str = "sqlite"
+    dsn: str | None = None
 
 
 @dataclass
@@ -78,6 +109,8 @@ class Config:
     ingestion: IngestionConfig
     embeddings: EmbeddingsConfig
     agent: AgentConfig
+    file_store: FileStoreConfig
+    upload_store: UploadStoreConfig
     system_prompt: str
 
 
@@ -105,5 +138,7 @@ def load_config() -> Config:
         ingestion=IngestionConfig(**raw["ingestion"]),
         embeddings=EmbeddingsConfig(**raw["embeddings"]),
         agent=AgentConfig(**raw["agent"]),
+        file_store=FileStoreConfig(**raw.get("file_store", {})),
+        upload_store=UploadStoreConfig(**raw.get("upload_store", {})),
         system_prompt=raw["system_prompt"],
     )

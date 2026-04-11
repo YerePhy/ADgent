@@ -1,12 +1,15 @@
 import hmac
 import hashlib
 import logging
+from pathlib import Path
 
 import gradio as gr
 from langchain_core.messages import BaseMessage, HumanMessage, ToolMessage
 from langchain_core.runnables import RunnableConfig
 
 from backend.app_context import AppContext
+
+_ALLOWED_SUFFIXES = {".nii", ".nii.gz"}
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +46,50 @@ def load_history(thread_id: str, ctx: AppContext):
         elif not isinstance(msg, ToolMessage) and hasattr(msg, "content"):
             history.append({"role": "assistant", "content": extract_text(msg.content)})
     return history
+
+
+def upload_file(
+    file_path: str | None,
+    history: list[dict],
+    thread_id: str,
+    ctx: AppContext,
+):
+    """Handle a NIfTI file upload from the Gradio file component.
+
+    Validates the file extension server-side, saves bytes via FileStore,
+    records the upload in UploadStore, and appends a confirmation message
+    to the chat history.
+
+    Args:
+        file_path: Temporary path Gradio wrote the upload to (None if cleared).
+        history: Current chat history.
+        thread_id: Active session thread ID.
+        ctx: Application context.
+
+    Returns:
+        Tuple of (updated history, None) — None clears the file component.
+    """
+    if file_path is None:
+        return history, None
+
+    path = Path(file_path)
+    filename = path.name
+
+    # Server-side extension check (.nii.gz has two suffixes, so check the full name)
+    suffix = "".join(path.suffixes)  # e.g. ".nii" or ".nii.gz"
+    if suffix not in _ALLOWED_SUFFIXES:
+        raise gr.Error(f"Unsupported file type '{suffix}'. Only .nii and .nii.gz are accepted.")
+
+    if not thread_id:
+        raise gr.Error("No active session. Please log in before uploading.")
+
+    data = path.read_bytes()
+    store_key = ctx.file_store.save(data, filename, thread_id)
+    ctx.upload_store.save_upload(thread_id, store_key, filename)
+    logger.info("File uploaded: filename=%s thread_id=%s store_key=%s", filename, thread_id, store_key)
+
+    history = history + [{"role": "assistant", "content": f"File uploaded: **{filename}**"}]
+    return history, None
 
 
 def respond(user_input: str, history: list[dict], thread_id: str, ctx: AppContext):
