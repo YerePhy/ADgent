@@ -76,6 +76,7 @@ class SqliteUploadStore(UploadStore):
         self._create_table()
 
     def _create_table(self) -> None:
+        """Create the uploads table and its thread index if they do not exist."""
         self._conn.execute("""
             CREATE TABLE IF NOT EXISTS uploads (
                 id          INTEGER PRIMARY KEY AUTOINCREMENT,

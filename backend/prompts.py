@@ -7,6 +7,15 @@ from backend.dataloaders import DataLoader, PdfInfo
 
 
 def _render_table(table_name: str, data_loader: DataLoader) -> str:
+    """Render a single table entry as a bullet line with column/type info.
+
+    Args:
+        table_name: Registered name of the table.
+        data_loader: Used to retrieve the table's schema.
+
+    Returns:
+        A formatted string such as ``"- mytable: col1 (int64), col2 (object)"``.
+    """
     schema = data_loader.get_table_schema(table_name)
     columns_info = ", ".join(
         f"{col} ({dtype})" for col, dtype in zip(schema.columns, schema.dtypes)
@@ -15,10 +24,28 @@ def _render_table(table_name: str, data_loader: DataLoader) -> str:
 
 
 def _render_name(name: str, _data_loader: DataLoader) -> str:
+    """Render a plain asset name as a bullet line.
+
+    Args:
+        name: Asset stem name (text file, code file, etc.).
+        _data_loader: Unused; kept for a uniform renderer signature.
+
+    Returns:
+        A formatted string such as ``"- myfile"``.
+    """
     return f"- {name}"
 
 
 def _render_pdf(pdf: PdfInfo, _data_loader: DataLoader) -> str:
+    """Render a PDF document entry as a bullet line with type, title, and authors.
+
+    Args:
+        pdf: Metadata for the PDF document.
+        _data_loader: Unused; kept for a uniform renderer signature.
+
+    Returns:
+        A formatted string such as ``"- [paper] My Title (Author A, Author B)"``.
+    """
     return f"- [{pdf.type}] {pdf.title} ({pdf.authors})"
 
 

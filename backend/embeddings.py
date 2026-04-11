@@ -4,7 +4,14 @@ from langchain_core.embeddings import Embeddings
 
 
 def _create_huggingface(model: str) -> Embeddings:
+    """Instantiate a HuggingFace embeddings model.
 
+    Args:
+        model: HuggingFace model identifier (e.g. ``"sentence-transformers/all-MiniLM-L6-v2"``).
+
+    Returns:
+        A LangChain-compatible embeddings instance backed by HuggingFace.
+    """
     return HuggingFaceEmbeddings(model_name=model)
 
 
