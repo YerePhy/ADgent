@@ -1,4 +1,4 @@
-.PHONY: help up down build purge rmi ingest run logs
+.PHONY: help up down build purge rmi ingest run logs lint
 
 IMAGE_NAME   := adgent-agent
 MODEL_VOLUME := adgent_model_cache
@@ -38,3 +38,8 @@ run: ## Launch the Gradio app locally via Python (no Docker)
 
 logs: ## Tail logs from the agent service only
 	docker compose logs -f agent
+
+lint: ## Run ruff lint, ruff format check, and mypy (mirrors CI)
+	uv run ruff check .
+	uv run ruff format --check .
+	uv run mypy backend/ scripts/
