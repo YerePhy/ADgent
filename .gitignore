@@ -208,5 +208,9 @@ __marimo__/
 
 # dirs
 data/
+dbase/
 .conversations/
 notebooks/
+
+# Windows Zone.Identifier sidecar files
+*.Identifier
