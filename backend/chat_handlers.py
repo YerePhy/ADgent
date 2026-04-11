@@ -78,16 +78,22 @@ def upload_file(
     # Server-side extension check (.nii.gz has two suffixes, so check the full name)
     suffix = "".join(path.suffixes)  # e.g. ".nii" or ".nii.gz"
     if suffix not in _ALLOWED_SUFFIXES:
-        raise gr.Error(f"Unsupported file type '{suffix}'. Only .nii and .nii.gz are accepted.")
+        msg = f"Unsupported file type '{suffix}'. Only .nii and .nii.gz are accepted."
+        return history + [{"role": "assistant", "content": f"Upload failed: {msg}"}], None
 
     if not thread_id:
-        raise gr.Error("No active session. Please log in before uploading.")
+        msg = "No active session. Please log in before uploading."
+        return history + [{"role": "assistant", "content": f"Upload failed: {msg}"}], None
 
-    data = path.read_bytes()
-    store_key = ctx.file_store.save(data, filename, thread_id)
-    ctx.upload_store.save_upload(thread_id, store_key, filename)
+    try:
+        data = path.read_bytes()
+        store_key = ctx.file_store.save(data, filename, thread_id)
+        ctx.upload_store.save_upload(thread_id, store_key, filename)
+    except Exception:
+        logger.exception("Failed to save upload: filename=%s thread_id=%s", filename, thread_id)
+        return history + [{"role": "assistant", "content": f"Upload failed: could not save **{filename}**. Check the logs."}], None
+
     logger.info("File uploaded: filename=%s thread_id=%s store_key=%s", filename, thread_id, store_key)
-
     history = history + [{"role": "assistant", "content": f"File uploaded: **{filename}**"}]
     return history, None
 
