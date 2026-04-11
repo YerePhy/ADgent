@@ -29,22 +29,7 @@ _load_history = functools.partial(load_history, ctx=ctx)
 _respond = functools.partial(respond, ctx=ctx)
 _upload_file = functools.partial(upload_file, ctx=ctx)
 
-_CSS = """
-#upload-btn, #send-btn {
-    min-width: 44px !important;
-    max-width: 44px !important;
-    align-self: stretch !important;
-}
-#upload-btn button, #send-btn button {
-    width: 100% !important;
-    height: 100% !important;
-    min-width: 44px !important;
-    padding: 0 !important;
-    border-radius: 8px !important;
-    font-size: 26px !important;
-    line-height: 1 !important;
-}
-"""
+_CSS = here("frontend/styles.css")
 
 with gr.Blocks(title="ADgent", css=_CSS) as demo:
     thread_id_state = gr.State(value=None)
@@ -101,9 +86,8 @@ with gr.Blocks(title="ADgent", css=_CSS) as demo:
         outputs=[chatbot, msg_input],
     )
 
-if __name__ == "__main__":
-    demo.queue()
-    demo.launch(
-        server_name=os.getenv("GRADIO_SERVER_NAME", "127.0.0.1"),
-        server_port=int(os.getenv("GRADIO_SERVER_PORT", 7860)),
-    )
+demo.queue()
+demo.launch(
+    server_name=os.getenv("GRADIO_SERVER_NAME", "0.0.0.0"),
+    server_port=int(os.getenv("GRADIO_SERVER_PORT", 7860)),
+)
