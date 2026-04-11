@@ -54,7 +54,7 @@ class FileStoreConfig:
         bucket: S3 bucket name (only required when ``backend="s3"``).
     """
 
-    backend: str
+    backend: str = "local"
     base_dir: str = "./data/uploads"
     bucket: str | None = None
 
