@@ -101,9 +101,10 @@ def create_file_store(backend: str, **kwargs) -> FileStore:
     factory = _BACKENDS.get(backend)
     if factory is None:
         raise ValueError(
-            f"Unknown file store backend {backend!r}. "
-            f"Available: {', '.join(_BACKENDS)}"
+            f"Unknown file store backend {backend!r}. Available: {', '.join(_BACKENDS)}"
         )
     allowed = _KNOWN_KWARGS.get(backend)
-    filtered = {k: v for k, v in kwargs.items() if v is not None and (allowed is None or k in allowed)}
+    filtered = {
+        k: v for k, v in kwargs.items() if v is not None and (allowed is None or k in allowed)
+    }
     return factory(**filtered)

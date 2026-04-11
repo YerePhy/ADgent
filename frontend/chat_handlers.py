@@ -149,9 +149,16 @@ def upload_file(
         ctx.upload_store.save_upload(thread_id, store_key, filename)
     except Exception:
         logger.exception("Failed to save upload: filename=%s thread_id=%s", filename, thread_id)
-        return history + [{"role": "assistant", "content": f"Upload failed: could not save **{filename}**. Check the logs."}]
+        return history + [
+            {
+                "role": "assistant",
+                "content": f"Upload failed: could not save **{filename}**. Check the logs.",
+            }
+        ]
 
-    logger.info("File uploaded: filename=%s thread_id=%s store_key=%s", filename, thread_id, store_key)
+    logger.info(
+        "File uploaded: filename=%s thread_id=%s store_key=%s", filename, thread_id, store_key
+    )
     return history + [{"role": "assistant", "content": f"File uploaded: **{filename}**"}]
 
 
@@ -183,7 +190,10 @@ def respond(user_input: str, history: list[dict], thread_id: str, ctx: AppContex
     new_messages: list[BaseMessage] = [] if has_prior else [ctx.system_message]
     new_messages.append(HumanMessage(content=user_input))
 
-    history = history + [{"role": "user", "content": user_input}, {"role": "assistant", "content": ""}]
+    history = history + [
+        {"role": "user", "content": user_input},
+        {"role": "assistant", "content": ""},
+    ]
     tool_names: list[str] = []
 
     for chunk, metadata in ctx.agent.stream(

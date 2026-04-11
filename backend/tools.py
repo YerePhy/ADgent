@@ -96,7 +96,7 @@ def make_search_documents_tool(vectorstore: VectorStore, k: int = 5) -> BaseTool
 # under agent.tools in config.yaml.
 
 _TOOLS: dict[str, Callable[[Infrastructure], BaseTool]] = {
-    "query_table":      lambda infra: make_query_table_tool(infra.data_loader),
+    "query_table": lambda infra: make_query_table_tool(infra.data_loader),
     "search_documents": lambda infra: make_search_documents_tool(infra.vectorstore),
 }
 
@@ -116,7 +116,5 @@ def build_tools(infra: Infrastructure, enabled: list[str]) -> list[BaseTool]:
     """
     unknown = [name for name in enabled if name not in _TOOLS]
     if unknown:
-        raise ValueError(
-            f"Unknown tool(s): {unknown}. Available: {list(_TOOLS)}"
-        )
+        raise ValueError(f"Unknown tool(s): {unknown}. Available: {list(_TOOLS)}")
     return [_TOOLS[name](infra) for name in enabled]

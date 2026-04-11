@@ -86,16 +86,13 @@ class SqliteUploadStore(UploadStore):
                 uploaded_at TEXT NOT NULL DEFAULT (datetime('now'))
             )
         """)
-        self._conn.execute(
-            "CREATE INDEX IF NOT EXISTS idx_uploads_thread ON uploads(thread_id)"
-        )
+        self._conn.execute("CREATE INDEX IF NOT EXISTS idx_uploads_thread ON uploads(thread_id)")
         self._conn.commit()
 
     def save_upload(self, thread_id: str, store_key: str, filename: str) -> UploadRecord:
         uploaded_at = datetime.now(timezone.utc).isoformat()
         cur = self._conn.execute(
-            "INSERT INTO uploads (thread_id, store_key, filename, uploaded_at) "
-            "VALUES (?, ?, ?, ?)",
+            "INSERT INTO uploads (thread_id, store_key, filename, uploaded_at) VALUES (?, ?, ?, ?)",
             (thread_id, store_key, filename, uploaded_at),
         )
         self._conn.commit()
@@ -143,9 +140,10 @@ def create_upload_store(backend: str, **kwargs) -> UploadStore:
     factory = _BACKENDS.get(backend)
     if factory is None:
         raise ValueError(
-            f"Unknown upload store backend {backend!r}. "
-            f"Available: {', '.join(_BACKENDS)}"
+            f"Unknown upload store backend {backend!r}. Available: {', '.join(_BACKENDS)}"
         )
     allowed = _KNOWN_KWARGS.get(backend)
-    filtered = {k: v for k, v in kwargs.items() if v is not None and (allowed is None or k in allowed)}
+    filtered = {
+        k: v for k, v in kwargs.items() if v is not None and (allowed is None or k in allowed)
+    }
     return factory(**filtered)

@@ -121,7 +121,7 @@ def build_app_context(config: Config, infra: Infrastructure) -> AppContext:
     if not session_salt:
         raise RuntimeError(
             "SESSION_SALT env var must be set. "
-            "Generate one with: python -c \"import secrets; print(secrets.token_hex(32))\""
+            'Generate one with: python -c "import secrets; print(secrets.token_hex(32))"'
         )
 
     logger.info("System prompt: %s", config.system_prompt)
