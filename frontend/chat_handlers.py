@@ -7,7 +7,7 @@ import gradio as gr
 from langchain_core.messages import BaseMessage, HumanMessage, ToolMessage
 from langchain_core.runnables import RunnableConfig
 
-from backend.app_context import AppContext
+from backend.context import AppContext
 
 _ALLOWED_SUFFIXES = {".nii", ".nii.gz"}
 
